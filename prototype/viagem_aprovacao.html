@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes - Viagens</title>
+    <title>Aprovação - Viagens</title>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -202,6 +202,55 @@
         </div>
     </div>
 
+    <div id="requestChangesModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4 py-6 hidden">
+        <div class="w-full max-w-2xl bg-white rounded-lg shadow-xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-neutral-200">
+                <h3 class="text-lg font-medium text-neutral-900">Solicitar Alterações</h3>
+            </div>
+            <div class="p-6">
+                <div class="mb-6">
+                    <label for="rejectJustification" class="block text-sm font-medium text-neutral-700 mb-2">Justificativa <span class="text-red-600">*</span></label>
+                    <textarea 
+                        id="rejectJustification"
+                        class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                        rows="4" 
+                        placeholder="Descreva o motivo da rejeição desta solicitação..."
+                        required></textarea>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-neutral-700 mb-2">Anexar Documentos</label>
+                    <div id="dropZone" class="border-2 border-dashed border-neutral-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                        <input type="file" id="fileInput" class="hidden" multiple>
+                        <div class="space-y-1">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-blue-500 mb-2"></i>
+                            <p class="text-sm text-neutral-600">
+                                <span class="font-medium text-blue-600">Clique para fazer upload</span> ou arraste e solte
+                            </p>
+                            <p class="text-xs text-neutral-500">Formatos aceitos: PDF, JPG, PNG (até 10MB cada)</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Lista de arquivos anexados -->
+                    <div id="fileList" class="mt-4 space-y-2 hidden">
+                        <div class="text-sm font-medium text-neutral-700">Arquivos anexados:</div>
+                        <div id="fileItems" class="space-y-2">
+                            <!-- Files will be added here dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-neutral-50 border-t border-neutral-200 flex justify-end space-x-3">
+                <button id="cancelRequestChangesBtn" type="button" class="px-4 py-2 text-sm rounded-md border border-neutral-300 text-neutral-700 hover:bg-neutral-100">
+                    Cancelar
+                </button>
+                <button id="confirmRequestChangesBtn" type="button" class="px-4 py-2 text-sm rounded-md bg-red-600 text-white hover:bg-red-700">
+                    Confirmar Alterações
+                </button>
+            </div>
+        </div>
+    </div>
+
     <style>
         #dropZone.drag-over {
             border-color: #3b82f6;
@@ -279,7 +328,7 @@
             <header id="header" class="h-16 bg-white border-b border-neutral-200 flex-shrink-0">
                 <div class="flex items-center justify-between h-full px-6">
                     <div id="page-title">
-                        <h1 class="text-xl text-neutral-800">Detalhes da Solicitação #12345</h1>
+                        <h1 class="text-xl text-neutral-800">Aprovação de Viagem #12345</h1>
                     </div>
                     <div id="user-menu" class="flex items-center gap-4">
                         <div class="flex items-center gap-2 text-sm text-neutral-600">
@@ -297,126 +346,53 @@
 
             <main id="main-content" class="flex-1 bg-neutral-50 p-6">
                 <div class="flex gap-6">
-                    <!-- Barra lateral com status de aprovação -->
-                    <div class="w-72 flex-shrink-0">
-                        <div class="bg-white border border-neutral-200 rounded-lg p-5">
-                            <h3 class="text-sm font-medium text-neutral-700 mb-4">Status da Solicitação</h3>
-                            <div class="space-y-6">
-                                <!-- Etapa 1: Solicitado -->
-                                <div class="flex items-start gap-3">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-solid fa-check text-green-600 text-xs"></i>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between items-baseline">
-                                            <h4 class="text-sm font-medium text-neutral-900">Enviada</h4>
-                                            <span class="text-xs text-neutral-500 ml-2">01/08/2025</span>
-                                        </div>
-                                        <p class="text-xs text-neutral-500 mt-0.5">14:30</p>
-                                    </div>
-                                </div>
-                                
-                                <!-- Etapa 2: Em Análise -->
-                                <div class="flex items-start gap-3">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-solid fa-spinner fa-spin text-blue-600 text-xs"></i>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between items-baseline">
-                                            <h4 class="text-sm font-medium text-neutral-900">Superior Imediato - Em Aprovação</h4>
-                                            <span class="text-xs text-neutral-500 ml-2">02/08/2025</span>
-                                        </div>
-                                        <p class="text-xs text-neutral-500 mt-0.5">09:15</p>
-                                    </div>
-                                </div>
-                                
-                                <!-- Etapa 3: Comercial - Em Aprovação -->
-                                <div class="flex items-start gap-3 opacity-50">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-regular fa-clock text-neutral-400 text-xs"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-sm font-medium text-neutral-900">Comercial - Aprovar</h4>
-                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
-                                    </div>
-                                </div>
-                                
-                                <!-- Etapa 4: Financeiro - Em Aprovação -->
-                                <div class="flex items-start gap-3 opacity-50">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-regular fa-circle text-neutral-400 text-xs"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-sm font-medium text-neutral-900">Financeiro - Aprovar</h4>
-                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
-                                    </div>
-                                </div>
-                                <!-- Etapa 5: Liberação de Adiantamento -->
-                                <div class="flex items-start gap-3 opacity-50">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-regular fa-circle text-neutral-400 text-xs"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-sm font-medium text-neutral-900">Liberação de Adiantamento</h4>
-                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
-                                    </div>
-                                </div>
 
-                                <!-- Etapa 6: Prestar Contas -->
-                                <div class="flex items-start gap-3 opacity-50">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-regular fa-circle text-neutral-400 text-xs"></i>
+                    <!-- Sidebar de Aprovação -->
+                    <div class="w-72">
+                        <div class="bg-white rounded-lg border p-4">
+                            <h3 class="font-medium mb-4">Status da Aprovação</h3>
+                            
+                            <!-- Status Steps -->
+                            <div class="space-y-4 mb-6">
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                                        <i class="fas fa-check text-green-600 text-xs"></i>
                                     </div>
                                     <div>
-                                        <h4 class="text-sm font-medium text-neutral-900">Prestar Contas</h4>
-                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
+                                        <p class="text-sm font-medium">Solicitação Enviada</p>
+                                        <p class="text-xs text-gray-500">01/08/2025 14:30</p>
                                     </div>
                                 </div>
-                                <!-- Etapa 7: Superior Imediato - Aprovar -->
-                                <div class="flex items-start gap-3 opacity-50">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-regular fa-circle text-neutral-400 text-xs"></i>
+                                
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center">
+                                        <i class="fas fa-spinner text-white text-xs animate-spin"></i>
                                     </div>
                                     <div>
-                                        <h4 class="text-sm font-medium text-neutral-900">Superior Imediato - Aprovar</h4>
-                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
+                                        <p class="text-sm font-medium">Superior Imediato - Em Aprovação</p>
+                                        <p class="text-xs text-gray-500">Em andamento</p>
                                     </div>
                                 </div>
-                                <!-- Etapa 8: Comercial - Aprovar -->
-                                <div class="flex items-start gap-3 opacity-50">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-regular fa-circle text-neutral-400 text-xs"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-sm font-medium text-neutral-900">Comercial - Aprovar</h4>
-                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
-                                    </div>
-                                </div>
-                                <!-- Etapa 9: Financeiro - Aprovar -->
-                                <div class="flex items-start gap-3 opacity-50">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-regular fa-circle text-neutral-400 text-xs"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-sm font-medium text-neutral-900">Financeiro - Aprovar</h4>
-                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
-                                    </div>
-                                </div>
-                                <!-- Etapa 10: Finalizado -->
-                                <div class="flex items-start gap-3 opacity-50">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-regular fa-circle text-neutral-400 text-xs"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-sm font-medium text-neutral-900">Finalizado</h4>
-                                        <p class="text-xs text-neutral-400 mt-0.5">Finalizado</p>
-                                    </div>
-                                </div>
+                            </div>
 
+                            <!-- Ações de Aprovação -->
+                            <div class="space-y-2">
+                                <button onclick="showApprovalConfirmationModal()" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded flex items-center justify-center gap-2">
+                                    <i class="fas fa-check"></i>
+                                    Aprovar
+                                </button>
+                                <button onclick="showRejectModal()" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded flex items-center justify-center gap-2">
+                                    <i class="fas fa-times"></i>
+                                    Rejeitar
+                                </button>
+                                <button onclick="showRequestChangesModal()" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded flex items-center justify-center gap-2">
+                                    <i class="fas fa-edit"></i>
+                                    Solicitar Alterações
+                                </button>
                             </div>
                         </div>
                     </div>
-
+                   
                     <!-- Conteúdo principal -->
                     <div class="flex-1">
                         <div id="travel-request-details-container" class="bg-white border border-neutral-200 rounded-lg p-6">
@@ -432,23 +408,11 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="flex justify-end gap-3">
-
-                                        <div class="flex items-center gap-2">
-                                            <a href="viagem_overview.html" class="px-4 py-2 text-sm rounded-md border border-neutral-300 text-neutral-700 hover:bg-neutral-100">
-                                                Voltar
-                                            </a>
-                                        </div>
-                                        <button id="submitRequestBtn" class="px-4 py-2 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700">
-                                            <i class="fa-solid fa-check mr-2"></i>
-                                            Aprovar
-                                        </button>
-                                        <button onclick="showRejectModal()" class="px-4 py-2 text-sm rounded-md bg-red-600 text-white hover:bg-red-700">
-                                            <i class="fa-solid fa-xmark mr-2"></i>
-                                            Rejeitar
-                                        </button>
+                                <div class="flex items-center gap-2">
+                                    <a href="viagem_overview.html" class="px-4 py-2 text-sm rounded-md border border-neutral-300 text-neutral-700 hover:bg-neutral-100">
+                                        Voltar
+                                    </a>
                                 </div>
-    
                             </div>
 
                             <div id="itinerary-section" class="mb-6">
@@ -598,6 +562,25 @@
                                 </div>
                             </div>
 
+                            <!-- Approval Confirmation Modal -->
+                            <div id="approvalConfirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+                                <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center">
+                                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <i class="fa-solid fa-check-double text-blue-600 text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-xl font-medium text-neutral-900 mb-2">Confirmação de Aprovação</h3>
+                                    <p class="text-neutral-600 mb-6">Deseja realmente aprovar esta solicitação de viagem?</p>
+                                    <div class="flex gap-3">
+                                        <button id="cancelApprovalBtn" class="flex-1 bg-white border border-neutral-300 text-neutral-700 px-4 py-2 rounded-md hover:bg-neutral-50">
+                                            Cancelar
+                                        </button>
+                                        <button id="confirmApprovalBtn" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                                            Confirmar Aprovação
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Success Modal -->
                             <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
                                 <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center">
@@ -605,7 +588,7 @@
                                         <i class="fa-solid fa-check text-green-600 text-2xl"></i>
                                     </div>
                                     <h3 class="text-xl font-medium text-neutral-900 mb-2">Solicitação Enviada</h3>
-                                    <p class="text-neutral-600 mb-6">Sua solicitação foi enviada com sucesso!</p>
+                                    <p class="text-neutral-600 mb-6">A solicitação foi enviada com sucesso!</p>
                                     <button id="closeModalBtn" class="w-full bg-neutral-800 text-white px-4 py-2 rounded-md hover:bg-neutral-700">
                                         Voltar para Minhas Solicitações
                                     </button>
@@ -630,6 +613,8 @@
     <script>
         // Modal elements
         const rejectModal = document.getElementById('rejectModal');
+        const requestChangesModal = document.getElementById('requestChangesModal');
+        const approvalConfirmationModal = document.getElementById('approvalConfirmationModal');
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput');
         const fileList = document.getElementById('fileList');
@@ -637,6 +622,8 @@
         const rejectJustification = document.getElementById('rejectJustification');
         const cancelRejectBtn = document.getElementById('cancelRejectBtn');
         const confirmRejectBtn = document.getElementById('confirmRejectBtn');
+        const cancelRequestChangesBtn = document.getElementById('cancelRequestChangesBtn');
+        const confirmRequestChangesBtn = document.getElementById('confirmRequestChangesBtn');
         
         // Files array to store uploaded files
         let files = [];
@@ -647,9 +634,29 @@
             document.body.style.overflow = 'hidden';
         }
 
+        function showApprovalConfirmationModal() {
+            approvalConfirmationModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function showRequestChangesModal() {
+            requestChangesModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
         // Hide modal function
         function hideRejectModal() {
             rejectModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function hideRequestChangesModal() {
+            requestChangesModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function hideApprovalConfirmationModal() {
+            approvalConfirmationModal.classList.add('hidden');
             document.body.style.overflow = '';
         }
 
@@ -745,10 +752,12 @@
 
         // Event Listeners
         document.addEventListener('DOMContentLoaded', () => {
-            const submitBtn = document.getElementById('submitRequestBtn');
+            const confirmApprovalConfirmationBtn = document.getElementById('confirmApprovalBtn');
             const processingModal = document.getElementById('processingModal');
             const successModal = document.getElementById('successModal');
             const closeModalBtn = document.getElementById('closeModalBtn');
+            const cancelApprovalConfirmationBtn = document.getElementById('cancelApprovalBtn');
+            const approvalConfirmationModal = document.getElementById('approvalConfirmationModal');
           
             // Show processing modal first
             function showProcessingModal() {
@@ -765,13 +774,6 @@
             function showSuccessModal() {
                 successModal.classList.remove('hidden');
             }
-          
-            // Handle form submission
-            submitBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                rejectModal.classList.add('hidden');
-                showProcessingModal();
-            });
           
             // Handle close button
             closeModalBtn.addEventListener('click', function() {
@@ -793,11 +795,38 @@
                 rejectButton.addEventListener('click', showRejectModal);
             }
             
+            // Open modal when clicking request changes button
+            const requestChangesButton = document.querySelector('button[onclick*="showRequestChangesModal"]');
+            if (requestChangesButton) {
+                requestChangesButton.addEventListener('click', showRequestChangesModal);
+            }
+
+            // Open modal when clicking approval confirmation button
+            const approvalConfirmationButton = document.querySelector('button[onclick*="showApprovalConfirmationModal"]');
+            if (approvalConfirmationButton) {
+                approvalConfirmationButton.addEventListener('click', showApprovalConfirmationModal);
+            }            
+            
             // Close modal when clicking cancel button or outside modal
             cancelRejectBtn.addEventListener('click', hideRejectModal);
             rejectModal.addEventListener('click', (e) => {
                 if (e.target === rejectModal) {
                     hideRejectModal();
+                }
+            });
+            
+            cancelRequestChangesBtn.addEventListener('click', hideRequestChangesModal);
+            requestChangesModal.addEventListener('click', (e) => {
+                if (e.target === requestChangesModal) {
+                    hideRequestChangesModal();
+                }
+            });            
+
+            // Close modal when clicking cancel button or outside modal
+            cancelApprovalConfirmationBtn.addEventListener('click', hideApprovalConfirmationModal);
+            approvalConfirmationModal.addEventListener('click', (e) => {
+                if (e.target === approvalConfirmationModal) {
+                    hideApprovalConfirmationModal();
                 }
             });
             
@@ -825,7 +854,19 @@
             // Confirm rejection
             confirmRejectBtn.addEventListener('click', () => {
                 hideRejectModal();
-                document.getElementById('submitRequestBtn').click();
+                showProcessingModal();                
+            });
+            
+            // Confirm request changes
+            confirmRequestChangesBtn.addEventListener('click', () => {
+                hideRequestChangesModal();
+                showProcessingModal();
+            });
+
+            // Confirm approval confirmation
+            confirmApprovalConfirmationBtn.addEventListener('click', () => {
+                hideApprovalConfirmationModal();
+                showProcessingModal();
             });
         });
     </script>

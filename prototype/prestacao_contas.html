@@ -212,132 +212,71 @@
 
             <main id="main-content" class="flex-1 bg-neutral-50 p-6">
                 <div class="flex gap-6">
-                    <!-- Barra lateral com status de aprovação -->
-                    <div class="w-72 flex-shrink-0">
-                        <div class="bg-white border border-neutral-200 rounded-lg p-5">
-                            <h3 class="text-sm font-medium text-neutral-700 mb-4">Status da Solicitação</h3>
-                            <div class="space-y-6">
-                                <!-- Etapa 1: Solicitado -->
+                    <div class="w-72">
+                        <div class="bg-white rounded-lg border p-4">
+                            <h3 class="font-medium mb-4">Status da Aprovação</h3>
+                            
+                            <!-- Status Steps -->
+                            <div class="space-y-4 mb-6">
                                 <div class="flex items-start gap-3">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-solid fa-check text-green-600 text-xs"></i>
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                                        <i class="fas fa-check text-green-600 text-xs"></i>
                                     </div>
                                     <div>
-                                        <div class="flex justify-between items-baseline">
-                                            <h4 class="text-sm font-medium text-neutral-900">Enviada</h4>
-                                            <span class="text-xs text-neutral-500 ml-2">01/08/2025</span>
-                                        </div>
-                                        <p class="text-xs text-neutral-500 mt-0.5">14:30</p>
+                                        <p class="text-sm font-medium">Solicitação Enviada</p>
+                                        <p class="text-xs text-gray-500">01/08/2025 14:30</p>
                                     </div>
                                 </div>
                                 
-                                <!-- Etapa 2: Em Análise -->
                                 <div class="flex items-start gap-3">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-solid fa-check text-green-600 text-xs"></i>
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                                        <i class="fas fa-check text-green-600 text-xs"></i>
                                     </div>
                                     <div>
-                                        <div class="flex justify-between items-baseline">
-                                            <h4 class="text-sm font-medium text-neutral-900">Superior Imediato - Em Aprovação</h4>
-                                            <span class="text-xs text-neutral-500 ml-2">02/08/2025</span>
-                                        </div>
-                                        <p class="text-xs text-neutral-500 mt-0.5">09:15</p>
-                                    </div>
-                                </div>
-                                
-                                <!-- Etapa 3: Comercial - Em Aprovação -->
-                                <div class="flex items-start gap-3">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-solid fa-check text-green-600 text-xs"></i>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between items-baseline">
-                                            <h4 class="text-sm font-medium text-neutral-900">Comercial - Aprovar</h4>
-                                            <span class="text-xs text-neutral-500 ml-2">02/08/2025</span>
-                                        </div>
-                                        <p class="text-xs text-neutral-500 mt-0.5">09:15</p>
-                                    </div>
-                                </div>
-                                
-                                <!-- Etapa 4: Financeiro - Em Aprovação -->
-                                <div class="flex items-start gap-3">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-solid fa-check text-green-600 text-xs"></i>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between items-baseline">
-                                            <h4 class="text-sm font-medium text-neutral-900">Financeiro - Aprovar</h4>
-                                            <span class="text-xs text-neutral-500 ml-2">02/08/2025</span>
-                                        </div>
-                                        <p class="text-xs text-neutral-500 mt-0.5">09:15</p>
-                                    </div>
-                                </div>
-                                <!-- Etapa 5: Liberação de Adiantamento -->
-                                <div class="flex items-start gap-3">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-solid fa-check text-green-600 text-xs"></i>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between items-baseline">
-                                            <h4 class="text-sm font-medium text-neutral-900">Liberação de Adiantamento</h4>
-                                            <span class="text-xs text-neutral-500 ml-2">02/08/2025</span>
-                                        </div>
-                                        <p class="text-xs text-neutral-500 mt-0.5">09:15</p>
+                                        <p class="text-sm font-medium">Superior Imediato - Aprovado</p>
+                                        <p class="text-xs text-gray-500">02/08/2025 09:15</p>
                                     </div>
                                 </div>
 
-                                <!-- Etapa 6: Prestar Contas -->
                                 <div class="flex items-start gap-3">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-solid fa-spinner fa-spin text-blue-400 text-xs"></i>
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                                        <i class="fas fa-check text-green-600 text-xs"></i>
                                     </div>
                                     <div>
-                                        <h4 class="text-sm font-medium text-neutral-900">Prestar Contas</h4>
-                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
+                                        <p class="text-sm font-medium">Comercial - Aprovado</p>
+                                        <p class="text-xs text-gray-500">02/08/2025 12:15</p>
                                     </div>
                                 </div>
-                                <!-- Etapa 7: Superior Imediato - Aprovar -->
-                                <div class="flex items-start gap-3 opacity-50">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-regular fa-clock text-neutral-400 text-xs"></i>
+                                
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                                        <i class="fas fa-check text-green-600 text-xs"></i>
                                     </div>
                                     <div>
-                                        <h4 class="text-sm font-medium text-neutral-900">Superior Imediato - Aprovar</h4>
-                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
+                                        <p class="text-sm font-medium">Financeiro - Aprovado</p>
+                                        <p class="text-xs text-gray-500">02/08/2025 14:15</p>
                                     </div>
                                 </div>
-                                <!-- Etapa 8: Comercial - Aprovar -->
-                                <div class="flex items-start gap-3 opacity-50">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-regular fa-circle text-neutral-400 text-xs"></i>
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                                        <i class="fas fa-check text-green-600 text-xs"></i>
                                     </div>
                                     <div>
-                                        <h4 class="text-sm font-medium text-neutral-900">Comercial - Aprovar</h4>
-                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
+                                        <p class="text-sm font-medium">Liberação de Adiantamento</p>
+                                        <p class="text-xs text-gray-500">02/08/2025 16:15</p>
                                     </div>
-                                </div>
-                                <!-- Etapa 9: Financeiro - Aprovar -->
-                                <div class="flex items-start gap-3 opacity-50">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-regular fa-circle text-neutral-400 text-xs"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-sm font-medium text-neutral-900">Financeiro - Aprovar</h4>
-                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
-                                    </div>
-                                </div>
-                                <!-- Etapa 10: Finalizado -->
-                                <div class="flex items-start gap-3 opacity-50">
-                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
-                                        <i class="fa-regular fa-circle text-neutral-400 text-xs"></i>
+                                </div>                                
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center">
+                                        <i class="fas fa-spinner text-white text-xs animate-spin"></i>
                                     </div>
                                     <div>
-                                        <h4 class="text-sm font-medium text-neutral-900">Finalizado</h4>
-                                        <p class="text-xs text-neutral-400 mt-0.5">Finalizado</p>
+                                        <p class="text-sm font-medium">Prestação de Contas</p>
+                                        <p class="text-xs text-gray-500">Em andamento</p>
                                     </div>
                                 </div>
-
                             </div>
+
                         </div>
                     </div>
 
