@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html class="" x-data="{ sidebarOpen: true }" :class="{ 'sidebar-collapsed': !sidebarOpen }">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes - Viagens</title>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        window.FontAwesomeConfig = {
+            autoReplaceSvg: 'nest',
+        };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        * { 
+            font-family: 'Inter', sans-serif;
+            box-sizing: border-box;
+        }
+        
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* Layout Principal */
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #app-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Sidebar */
+        #sidebar {
+            width: 16rem;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            background-color: #f9fafb;
+            border-right: 1px solid #e5e7eb;
+            transition: width 0.3s ease;
+        }
+        
+        /* Conteúdo Principal */
+        #main-content-wrapper {
+            flex: 1;
+            margin-left: 16rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s ease;
+            width: calc(100% - 16rem);
+        }
+        
+        /* Header */
+        #header {
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        /* Estilos quando a sidebar está recolhida */
+        .sidebar-collapsed #sidebar {
+            width: 4rem;
+        }
+        
+        .sidebar-collapsed #main-content-wrapper {
+            margin-left: 4rem;
+            width: calc(100% - 4rem);
+        }
+        
+        /* Itens do Menu */
+        .sidebar-text {
+            transition: opacity 0.2s ease, width 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .sidebar-collapsed .sidebar-text {
+            opacity: 0;
+            width: 0;
+            display: inline-block;
+        }
+        
+        .sidebar-logo-text {
+            transition: opacity 0.2s ease, width 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .sidebar-collapsed .sidebar-logo-text {
+            opacity: 0;
+            width: 0;
+            display: inline-block;
+        }
+        
+        /* Botão de Toggle */
+        #sidebar-toggle {
+            position: absolute;
+            right: -12px;
+            top: 1rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 50;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        #sidebar-toggle:hover {
+            background: #f3f4f6;
+        }
+        
+        .sidebar-collapsed #sidebar-toggle {
+            transform: rotate(180deg);
+        }
+        
+        /* Ajustes de Responsividade */
+        @media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar-collapsed #sidebar {
+                transform: translateX(0);
+            }
+            
+            #main-content-wrapper {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="h-full text-base-content">
+    <!-- Rejection Modal -->
+    <div id="rejectModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4 py-6 hidden">
+        <div class="w-full max-w-2xl bg-white rounded-lg shadow-xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-neutral-200">
+                <h3 class="text-lg font-medium text-neutral-900">Justificar Rejeição</h3>
+            </div>
+            <div class="p-6">
+                <div class="mb-6">
+                    <label for="rejectJustification" class="block text-sm font-medium text-neutral-700 mb-2">Justificativa <span class="text-red-600">*</span></label>
+                    <textarea 
+                        id="rejectJustification"
+                        class="w-full px-3 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                        rows="4" 
+                        placeholder="Descreva o motivo da rejeição desta solicitação..."
+                        required></textarea>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-neutral-700 mb-2">Anexar Documentos</label>
+                    <div id="dropZone" class="border-2 border-dashed border-neutral-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                        <input type="file" id="fileInput" class="hidden" multiple>
+                        <div class="space-y-1">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-blue-500 mb-2"></i>
+                            <p class="text-sm text-neutral-600">
+                                <span class="font-medium text-blue-600">Clique para fazer upload</span> ou arraste e solte
+                            </p>
+                            <p class="text-xs text-neutral-500">Formatos aceitos: PDF, JPG, PNG (até 10MB cada)</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Lista de arquivos anexados -->
+                    <div id="fileList" class="mt-4 space-y-2 hidden">
+                        <div class="text-sm font-medium text-neutral-700">Arquivos anexados:</div>
+                        <div id="fileItems" class="space-y-2">
+                            <!-- Files will be added here dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-neutral-50 border-t border-neutral-200 flex justify-end space-x-3">
+                <button id="cancelRejectBtn" type="button" class="px-4 py-2 text-sm rounded-md border border-neutral-300 text-neutral-700 hover:bg-neutral-100">
+                    Cancelar
+                </button>
+                <button id="confirmRejectBtn" type="button" class="px-4 py-2 text-sm rounded-md bg-red-600 text-white hover:bg-red-700">
+                    Confirmar Rejeição
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #dropZone.drag-over {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #f9fafb;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid #e5e7eb;
+        }
+        .file-item .file-icon {
+            margin-right: 0.75rem;
+        }
+        .file-item .file-info {
+            flex-grow: 1;
+            min-width: 0;
+        }
+        .file-item .file-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .file-item .remove-file {
+            color: #9ca3af;
+            cursor: pointer;
+        }
+        .file-item .remove-file:hover {
+            color: #ef4444;
+        }
+    </style>
+
+    <div id="app-container" class="bg-white text-neutral-900 flex min-h-[1200px] w-full">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="flex flex-col">
+            <div id="sidebar-header" class="h-16 flex items-center px-4 border-b border-neutral-200 relative">
+                <div class="flex items-center gap-3 w-full">
+                    <div class="w-8 h-8 bg-neutral-600 flex items-center justify-center rounded-md flex-shrink-0">
+                        <i class="fa-solid fa-seedling text-white"></i>
+                    </div>
+                    <span class="text-lg text-neutral-800 sidebar-logo-text">Capul</span>
+                </div>
+                <button id="sidebar-toggle" @click="sidebarOpen = !sidebarOpen" aria-label="Alternar menu" class="sidebar-toggle-icon">
+                    <i class="fas fa-chevron-left text-xs"></i>
+                </button>
+            </div>
+            <nav id="sidebar-nav" class="flex-1 px-4 py-4">
+                <ul class="space-y-1">
+                    <li>
+                        <span class="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 cursor-pointer">
+                            <i class="fa-solid fa-file-invoice w-5 text-center"></i>
+                            <span class="sidebar-text">Cadastro e Análise</span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 cursor-pointer">
+                            <i class="fa-solid fa-cash-register w-5 text-center"></i>
+                            <span class="sidebar-text">Fechamento de Caixa</span>
+                        </span>
+                    </li>
+                    <li>
+                        <a href="viagem_overview.html" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md bg-neutral-900 text-white">
+                            <i class="fa-solid fa-plane-departure w-5 text-center"></i>
+                            <span class="sidebar-text">Solicitação de Viagem</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div id="main-content-wrapper" class="flex-1 flex flex-col">
+            <header id="header" class="h-16 bg-white border-b border-neutral-200 flex-shrink-0">
+                <div class="flex items-center justify-between h-full px-6">
+                    <div id="page-title">
+                        <h1 class="text-xl text-neutral-800">Detalhes da Solicitação #12345</h1>
+                    </div>
+                    <div id="user-menu" class="flex items-center gap-4">
+                        <div class="flex items-center gap-2 text-sm text-neutral-600">
+                            <i class="fa-solid fa-user"></i>
+                            <span>Joaquim Rodrigo Moreira</span>
+                        </div>
+                        <div class="h-5 w-px bg-neutral-200"></div>
+                        <span class="flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 cursor-pointer">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                            <span>Sair</span>
+                        </span>
+                    </div>
+                </div>
+            </header>
+
+            <main id="main-content" class="flex-1 bg-neutral-50 p-6">
+                <div class="flex gap-6">
+                    <!-- Barra lateral com status de aprovação -->
+                    <div class="w-72 flex-shrink-0">
+                        <div class="bg-white border border-neutral-200 rounded-lg p-5">
+                            <h3 class="text-sm font-medium text-neutral-700 mb-4">Status da Solicitação</h3>
+                            <div class="space-y-6">
+                                <!-- Etapa 1: Solicitado -->
+                                <div class="flex items-start gap-3">
+                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 flex items-center justify-center mt-0.5">
+                                        <i class="fa-solid fa-check text-green-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between items-baseline">
+                                            <h4 class="text-sm font-medium text-neutral-900">Enviada</h4>
+                                            <span class="text-xs text-neutral-500 ml-2">01/08/2025</span>
+                                        </div>
+                                        <p class="text-xs text-neutral-500 mt-0.5">14:30</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Etapa 2: Em Análise -->
+                                <div class="flex items-start gap-3">
+                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center mt-0.5">
+                                        <i class="fa-solid fa-spinner fa-spin text-blue-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between items-baseline">
+                                            <h4 class="text-sm font-medium text-neutral-900">Superior Imediato - Em Aprovação</h4>
+                                            <span class="text-xs text-neutral-500 ml-2">02/08/2025</span>
+                                        </div>
+                                        <p class="text-xs text-neutral-500 mt-0.5">09:15</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Etapa 3: Comercial - Em Aprovação -->
+                                <div class="flex items-start gap-3 opacity-50">
+                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
+                                        <i class="fa-regular fa-clock text-neutral-400 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-neutral-900">Comercial - Aprovar</h4>
+                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Etapa 4: Financeiro - Em Aprovação -->
+                                <div class="flex items-start gap-3 opacity-50">
+                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
+                                        <i class="fa-regular fa-circle text-neutral-400 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-neutral-900">Financeiro - Aprovar</h4>
+                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
+                                    </div>
+                                </div>
+                                <!-- Etapa 5: Liberação de Adiantamento -->
+                                <div class="flex items-start gap-3 opacity-50">
+                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
+                                        <i class="fa-regular fa-circle text-neutral-400 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-neutral-900">Liberação de Adiantamento</h4>
+                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
+                                    </div>
+                                </div>
+
+                                <!-- Etapa 6: Prestar Contas -->
+                                <div class="flex items-start gap-3 opacity-50">
+                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
+                                        <i class="fa-regular fa-circle text-neutral-400 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-neutral-900">Prestar Contas</h4>
+                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
+                                    </div>
+                                </div>
+                                <!-- Etapa 7: Superior Imediato - Aprovar -->
+                                <div class="flex items-start gap-3 opacity-50">
+                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
+                                        <i class="fa-regular fa-circle text-neutral-400 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-neutral-900">Superior Imediato - Aprovar</h4>
+                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
+                                    </div>
+                                </div>
+                                <!-- Etapa 8: Comercial - Aprovar -->
+                                <div class="flex items-start gap-3 opacity-50">
+                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
+                                        <i class="fa-regular fa-circle text-neutral-400 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-neutral-900">Comercial - Aprovar</h4>
+                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
+                                    </div>
+                                </div>
+                                <!-- Etapa 9: Financeiro - Aprovar -->
+                                <div class="flex items-start gap-3 opacity-50">
+                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
+                                        <i class="fa-regular fa-circle text-neutral-400 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-neutral-900">Financeiro - Aprovar</h4>
+                                        <p class="text-xs text-neutral-400 mt-0.5">Pendente</p>
+                                    </div>
+                                </div>
+                                <!-- Etapa 10: Finalizado -->
+                                <div class="flex items-start gap-3 opacity-50">
+                                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center mt-0.5">
+                                        <i class="fa-regular fa-circle text-neutral-400 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-neutral-900">Finalizado</h4>
+                                        <p class="text-xs text-neutral-400 mt-0.5">Finalizado</p>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conteúdo principal -->
+                    <div class="flex-1">
+                        <div id="travel-request-details-container" class="bg-white border border-neutral-200 rounded-lg p-6">
+                            <div id="details-header" class="flex justify-between items-start mb-6">
+                                <div>
+                                    <h2 class="text-xl text-neutral-900">Joaquim Rodrigo Moreira</h2>
+                                    <div class="flex items-center gap-4 mt-2">
+                                        <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                                            Em Aprovação
+                                        </span>
+                                        <span class="text-sm text-neutral-500">
+                                            Solicitado em: 01/08/2025 14:30
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <a href="viagem_overview.html" class="px-4 py-2 text-sm rounded-md border border-neutral-300 text-neutral-700 hover:bg-neutral-100">
+                                        Voltar
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div id="itinerary-section" class="mb-6">
+                                <h3 class="text-lg text-neutral-800 mb-4 border-b pb-2">Roteiro de Viagem</h3>
+                                <div class="space-y-4">
+                                    <!-- Trecho 1 -->
+                                    <div class="grid grid-cols-12 gap-4 p-3 bg-neutral-50 rounded-md border">
+                                        <div class="col-span-2">
+                                            <p class="text-sm text-neutral-500 mb-1">Data Ida</p>
+                                            <p class="text-sm">12/08/2025</p>
+                                        </div>
+                                        <div class="col-span-2">
+                                            <p class="text-sm text-neutral-500 mb-1">Data Retorno</p>
+                                            <p class="text-sm">15/08/2025</p>
+                                        </div>
+                                        <div class="col-span-3">
+                                            <p class="text-sm text-neutral-500 mb-1">Origem</p>
+                                            <p class="text-sm">SP/São Paulo</p>
+                                        </div>
+                                        <div class="col-span-3">
+                                            <p class="text-sm text-neutral-500 mb-1">Destino</p>
+                                            <p class="text-sm">MG/Uberlândia</p>
+                                        </div>
+                                        <div class="col-span-2">
+                                            <p class="text-sm text-neutral-500 mb-1">Distância</p>
+                                            <p class="text-sm">587 km</p>
+                                        </div>
+                                    </div>
+                                    <!-- Trecho 2 -->
+                                    <div class="grid grid-cols-12 gap-4 p-3 bg-neutral-50 rounded-md border">
+                                        <div class="col-span-2">
+                                            <p class="text-sm text-neutral-500 mb-1">Data Ida</p>
+                                            <p class="text-sm">15/08/2025</p>
+                                        </div>
+                                        <div class="col-span-2">
+                                            <p class="text-sm text-neutral-500 mb-1">Data Retorno</p>
+                                            <p class="text-sm">15/08/2025</p>
+                                        </div>
+                                        <div class="col-span-3">
+                                            <p class="text-sm text-neutral-500 mb-1">Origem</p>
+                                            <p class="text-sm">MG/Uberlândia</p>
+                                        </div>
+                                        <div class="col-span-3">
+                                            <p class="text-sm text-neutral-500 mb-1">Destino</p>
+                                            <p class="text-sm">SP/São Paulo</p>
+                                        </div>
+                                        <div class="col-span-2">
+                                            <p class="text-sm text-neutral-500 mb-1">Distância</p>
+                                            <p class="text-sm">587 km</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-sm text-neutral-600">
+                                    <p><strong>Distância total:</strong> 1.174 km</p>
+                                </div>
+                            </div>
+
+                            <div id="justification-and-advance-section" class="grid grid-cols-2 gap-6 mt-8">
+                                <div>
+                                    <h4 class="text-sm font-medium text-neutral-700 mb-2">Justificativa da Viagem</h4>
+                                    <div class="p-4 bg-neutral-50 rounded-md border border-neutral-200">
+                                        <p class="text-sm">Visita técnica aos clientes da região de Uberlândia para apresentação do novo portfólio de produtos e negociação de contratos para o próximo semestre.</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-medium text-neutral-700 mb-2">Detalhes Financeiros</h4>
+                                    <div class="p-4 bg-neutral-50 rounded-md border border-neutral-200 space-y-2">
+                                        <p class="flex justify-between text-sm">
+                                            <span class="text-neutral-600">Custo por km:</span>
+                                            <span>R$ 0,75/km</span>
+                                        </p>
+                                        <p class="flex justify-between text-sm">
+                                            <span class="text-neutral-600">Distância total:</span>
+                                            <span>1.174 km</span>
+                                        </p>
+                                        <p class="flex justify-between text-sm font-medium">
+                                            <span class="text-neutral-800">Adiantamento solicitado:</span>
+                                            <span class="text-blue-600">R$ 880,50</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Seção de Anexos -->
+                            <div class="mt-8 pt-6 border-t border-neutral-200">
+                                <h3 class="text-base font-medium text-neutral-800 mb-4">Documentos Anexados</h3>
+                                <div class="space-y-3 mb-6">
+                                    <!-- Anexo 1 -->
+                                    <div class="flex items-center justify-between p-3 bg-neutral-50 rounded-md border border-neutral-200">
+                                        <div class="flex items-center space-x-3">
+                                            <i class="fas fa-file-pdf text-red-500 text-lg"></i>
+                                            <div>
+                                                <p class="text-sm font-medium text-neutral-900">Passagem Aérea - Ida.pdf</p>
+                                                <p class="text-xs text-neutral-500">1.2 MB • 02/08/2025 10:15</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                                <i class="fas fa-download mr-1"></i> Baixar
+                                            </a>
+                                            <span class="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">Aprovado</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Anexo 2 -->
+                                    <div class="flex items-center justify-between p-3 bg-neutral-50 rounded-md border border-neutral-200">
+                                        <div class="flex items-center space-x-3">
+                                            <i class="fas fa-file-image text-blue-500 text-lg"></i>
+                                            <div>
+                                                <p class="text-sm font-medium text-neutral-900">Comprovante Hotel.jpg</p>
+                                                <p class="text-xs text-neutral-500">850 KB • 02/08/2025 10:20</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                                <i class="fas fa-download mr-1"></i> Baixar
+                                            </a>
+                                            <span class="text-xs px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full">Pendente</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Anexo 3 -->
+                                    <div class="flex items-center justify-between p-3 bg-neutral-50 rounded-md border border-neutral-200">
+                                        <div class="flex items-center space-x-3">
+                                            <i class="fas fa-file-word text-blue-700 text-lg"></i>
+                                            <div>
+                                                <p class="text-sm font-medium text-neutral-900">Relatório de Despesas.docx</p>
+                                                <p class="text-xs text-neutral-500">2.1 MB • 03/08/2025 15:45</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                                <i class="fas fa-download mr-1"></i> Baixar
+                                            </a>
+                                            <span class="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">Aprovado</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Processing Modal -->
+                            <div id="processingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+                                <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center">
+                                    <div class="w-16 h-16 border-4 border-neutral-200 border-t-neutral-800 rounded-full animate-spin mx-auto mb-4"></div>
+                                    <h3 class="text-xl font-medium text-neutral-900 mb-2">Processando</h3>
+                                    <p class="text-neutral-600">Aguarde enquanto processamos sua solicitação...</p>
+                                </div>
+                            </div>
+
+                            <!-- Success Modal -->
+                            <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+                                <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center">
+                                     <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <i class="fa-solid fa-check text-green-600 text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-xl font-medium text-neutral-900 mb-2">Solicitação Enviada</h3>
+                                    <p class="text-neutral-600 mb-6">Sua solicitação foi enviada com sucesso!</p>
+                                    <button id="closeModalBtn" class="w-full bg-neutral-800 text-white px-4 py-2 rounded-md hover:bg-neutral-700">
+                                        Voltar para Minhas Solicitações
+                                    </button>
+                                </div>
+                            </div>
+                            <style>
+                                @keyframes spin {
+                                    0% { transform: rotate(0deg); }
+                                    100% { transform: rotate(360deg); }
+                                }
+                                .animate-spin {
+                                    animation: spin 1s linear infinite;
+                                }
+                            </style>                          
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal elements
+        const rejectModal = document.getElementById('rejectModal');
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const fileItems = document.getElementById('fileItems');
+        const rejectJustification = document.getElementById('rejectJustification');
+        const cancelRejectBtn = document.getElementById('cancelRejectBtn');
+        const confirmRejectBtn = document.getElementById('confirmRejectBtn');
+        
+        // Files array to store uploaded files
+        let files = [];
+
+        // Show modal function
+        function showRejectModal() {
+            rejectModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Hide modal function
+        function hideRejectModal() {
+            rejectModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Get file icon class based on file type
+        function getFileIconClass(fileType) {
+            if (fileType === 'application/pdf') return 'fa-file-pdf text-red-500';
+            if (fileType.startsWith('image/')) return 'fa-file-image text-green-500';
+            return 'fa-file-alt text-blue-500';
+        }
+
+        // Add file to the list
+        function addFileToList(file) {
+            const fileData = {
+                file: file,
+                name: file.name,
+                size: formatFileSize(file.size),
+                type: file.type,
+                uploadTime: new Date().toLocaleTimeString()
+            };
+            files.push(fileData);
+            renderFileList();
+        }
+
+        // Remove file from the list
+        function removeFile(index) {
+            files.splice(index, 1);
+            renderFileList();
+        }
+
+        // Render the file list
+        function renderFileList() {
+            fileItems.innerHTML = '';
+            
+            if (files.length === 0) {
+                fileList.classList.add('hidden');
+                return;
+            }
+            
+            fileList.classList.remove('hidden');
+            
+            files.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="fas ${getFileIconClass(file.type)} file-icon"></i>
+                        <div class="file-info">
+                            <div class="file-name text-sm">${file.name}</div>
+                            <div class="text-xs text-neutral-500">${file.size} • ${file.uploadTime}</div>
+                        </div>
+                    </div>
+                    <i class="fas fa-times remove-file" data-index="${index}"></i>
+                `;
+                fileItems.appendChild(fileItem);
+            });
+            
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.remove-file').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.getAttribute('data-index'));
+                    removeFile(index);
+                });
+            });
+        }
+
+        // Handle file selection
+        function handleFileSelect(e) {
+            const selectedFiles = e.target.files || e.dataTransfer.files;
+            
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const file = selectedFiles[i];
+                
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('Arquivo muito grande. O tamanho máximo permitido é 10MB.');
+                    continue;
+                }
+                
+                addFileToList(file);
+            }
+            
+            // Reset file input to allow selecting the same file again
+            fileInput.value = '';
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            const submitBtn = document.getElementById('submitRequestBtn');
+            const processingModal = document.getElementById('processingModal');
+            const successModal = document.getElementById('successModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+          
+            // Show processing modal first
+            function showProcessingModal() {
+                processingModal.classList.remove('hidden');
+              
+              // Simulate API call/processing time (2 seconds)
+              setTimeout(() => {
+                  processingModal.classList.add('hidden');
+                  showSuccessModal();
+              }, 2000);
+            }
+          
+            // Show success modal after processing
+            function showSuccessModal() {
+                successModal.classList.remove('hidden');
+            }
+          
+            // Handle form submission
+            submitBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showProcessingModal();
+            });
+          
+            // Handle close button
+            closeModalBtn.addEventListener('click', function() {
+                successModal.classList.add('hidden');
+                window.location.href = 'viagem_overview.html';
+            });
+          
+            // Close modal when clicking outside
+            successModal.addEventListener('click', function(e) {
+                if (e.target === successModal) {
+                    successModal.classList.add('hidden');
+                    window.location.href = 'viagem_overview.html';
+                }
+            });             
+            
+            // Open modal when clicking reject button
+            const rejectButton = document.querySelector('button[onclick*="showRejectModal"]');
+            if (rejectButton) {
+                rejectButton.addEventListener('click', showRejectModal);
+            }
+            
+            // Close modal when clicking cancel button or outside modal
+            cancelRejectBtn.addEventListener('click', hideRejectModal);
+            rejectModal.addEventListener('click', (e) => {
+                if (e.target === rejectModal) {
+                    hideRejectModal();
+                }
+            });
+            
+            // File input change handler
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // Drop zone handlers
+            dropZone.addEventListener('click', () => fileInput.click());
+            
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('drag-over');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+                handleFileSelect(e);
+            });
+            
+            // Confirm rejection
+            confirmRejectBtn.addEventListener('click', () => {
+                if (!rejectJustification.value.trim()) {
+                    alert('Por favor, informe a justificativa para a rejeição.');
+                    return;
+                }
+                
+                // Here you would typically submit the form data to your backend
+                const formData = new FormData();
+                formData.append('justification', rejectJustification.value);
+                
+                files.forEach((fileData, index) => {
+                    formData.append(`file_${index}`, fileData.file);
+                });
+                
+                // Example fetch call (uncomment and modify as needed)
+                /*
+                fetch('/api/travel-requests/123/reject', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Handle success
+                    hideRejectModal();
+                    // Optionally refresh the page or update UI
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ocorreu um erro ao enviar a rejeição. Por favor, tente novamente.');
+                });
+                */
+                
+                // For demo purposes, just close the modal
+                hideRejectModal();
+                alert('Rejeição enviada com sucesso!');
+                
+                // Reset form
+                rejectJustification.value = '';
+                files = [];
+                renderFileList();
+            });
+        });
+    </script>
+</body>
+</html>

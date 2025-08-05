@@ -1,0 +1,307 @@
+<html><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = {
+  "theme": {
+    "extend": {
+      "fontFamily": {
+        "sans": [
+          "Inter",
+          "sans-serif"
+        ]
+      },
+      "colors": {
+        "primary": {
+          "50": "#f0f9ff",
+          "100": "#e0f2fe",
+          "500": "#0ea5e9",
+          "600": "#0284c7",
+          "700": "#0369a1",
+          "800": "#075985",
+          "900": "#0c4a6e"
+        }
+      },
+      "boxShadow": {
+        "soft": "0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)",
+        "card": "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
+        "elevated": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+      }
+    }
+  }
+};</script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <style>::-webkit-scrollbar { display: none;}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;500;600;700;800;900&amp;display=swap"><style>
+      body {
+        font-family: 'Inter', sans-serif !important;
+      }
+      
+      /* Preserve Font Awesome icons */
+      .fa, .fas, .far, .fal, .fab {
+        font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
+      }
+    </style><style>
+  .highlighted-section {
+    outline: 2px solid #3F20FB;
+    background-color: rgba(63, 32, 251, 0.1);
+  }
+
+  .edit-button {
+    position: absolute;
+    z-index: 1000;
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  html, body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  </style></head>
+<body class="bg-gray-50 font-sans">
+
+<div id="expense-report-container" class="bg-gradient-to-br from-gray-50 to-gray-100 text-gray-900">
+    <div id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 z-50 shadow-soft">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center rounded-xl shadow-card">
+                    <i class="fa-solid fa-seedling text-white text-xl"></i>
+                </div>
+                <span class="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">Capul</span>
+            </div>
+            
+            <nav class="space-y-2">
+                <span class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-800 rounded-xl cursor-pointer transition-all duration-200 group">
+                    <i class="fa-solid fa-user-plus group-hover:scale-110 transition-transform"></i>
+                    <span class="font-medium">Cadastro e Crédito</span>
+                </span>
+                <span class="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-800 rounded-xl cursor-pointer transition-all duration-200 group">
+                    <i class="fa-solid fa-cash-register group-hover:scale-110 transition-transform"></i>
+                    <span class="font-medium">Fechamento de Caixa</span>
+                </span>
+                <span class="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-gray-800 to-gray-700 text-white rounded-xl cursor-pointer shadow-elevated">
+                    <i class="fa-solid fa-plane"></i>
+                    <span class="font-medium">Solicitação de Viagem</span>
+                </span>
+            </nav>
+        </div>
+    </div>
+
+    <div id="main-content" class="ml-64">
+        <header id="header" class="bg-white border-b border-gray-200 px-8 py-6 shadow-card">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-1">Prestação de Contas</h1>
+                    <p class="text-sm text-gray-500 font-medium">Solicitação #2025-001 - São Paulo/SP para Rio de Janeiro/RJ</p>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="text-right bg-gradient-to-br from-primary-50 to-blue-50 px-4 py-3 rounded-xl border border-primary-100">
+                        <div class="text-xs text-primary-600 font-semibold uppercase tracking-wide">Período da Viagem</div>
+                        <div class="text-lg font-bold text-primary-800">01/09 a 15/09</div>
+                    </div>
+                    <div class="w-12 h-12 rounded-full overflow-hidden shadow-elevated ring-2 ring-primary-100">
+                        <img src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" alt="Avatar" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main id="expense-main" class="p-8">
+            <div class="max-w-5xl mx-auto space-y-8">
+                <div id="expense-summary" class="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-200 shadow-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-1">Resumo da Prestação</h3>
+                            <p class="text-sm text-gray-600 font-medium">Total prestado até o momento</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-3xl font-bold text-green-700">R$ 2.450,00</div>
+                            <div class="text-sm text-gray-600 font-medium">de R$ 3.500,00 adiantados</div>
+                            <div class="w-full bg-green-200 rounded-full h-2 mt-2">
+                                <div class="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full" style="width: 70%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="expense-days" class="space-y-6">
+                    <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-card hover:shadow-elevated transition-shadow duration-300">
+                        <div class="flex items-center justify-between mb-6">
+                            <h4 class="text-xl font-bold text-gray-900">01/09/2025 - Segunda-feira</h4>
+                            <div class="flex items-center gap-2 text-sm font-semibold text-green-700 bg-gradient-to-r from-green-100 to-emerald-100 px-4 py-2 rounded-full border border-green-200">
+                                <i class="fa-solid fa-check"></i>
+                                <span>Preenchido</span>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-3">Valor da Despesa</label>
+                                    <input type="text" value="R$ 450,00" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-3">Tipo de Despesa</label>
+                                    <select class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all">
+                                        <option>Hospedagem</option>
+                                        <option>Alimentação</option>
+                                        <option>Transporte</option>
+                                        <option>Outros</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">Justificativa</label>
+                                <textarea class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-sm font-medium h-24 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all" placeholder="Descreva a despesa...">Hotel Copacabana - 1 diária</textarea>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">Comprovantes</label>
+                                <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center bg-gradient-to-br from-gray-50 to-gray-100 hover:from-primary-50 hover:to-blue-50 hover:border-primary-300 transition-all duration-300">
+                                    <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 mb-3"></i>
+                                    <p class="text-sm text-gray-600 mb-3 font-medium">Arraste arquivos aqui ou clique para selecionar</p>
+                                    <button class="px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl text-sm font-semibold hover:from-primary-600 hover:to-primary-700 shadow-card transition-all">
+                                        Selecionar Arquivos
+                                    </button>
+                                </div>
+                                <div class="mt-4 space-y-3">
+                                    <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-card">
+                                        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                            <i class="fa-solid fa-file-pdf text-red-600"></i>
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-700 flex-1">nota_fiscal_hotel.pdf</span>
+                                        <button class="text-gray-400 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-all">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-card hover:shadow-elevated transition-shadow duration-300">
+                        <div class="flex items-center justify-between mb-6">
+                            <h4 class="text-xl font-bold text-gray-900">02/09/2025 - Terça-feira</h4>
+                            <div class="flex items-center gap-2 text-sm font-semibold text-amber-700 bg-gradient-to-r from-amber-100 to-yellow-100 px-4 py-2 rounded-full border border-amber-200">
+                                <i class="fa-solid fa-clock"></i>
+                                <span>Pendente</span>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-3">Valor da Despesa</label>
+                                    <input type="text" placeholder="R$ 0,00" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-3">Tipo de Despesa</label>
+                                    <select class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all">
+                                        <option value="">Selecione...</option>
+                                        <option>Hospedagem</option>
+                                        <option>Alimentação</option>
+                                        <option>Transporte</option>
+                                        <option>Outros</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">Justificativa</label>
+                                <textarea class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-sm font-medium h-24 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all" placeholder="Descreva a despesa..."></textarea>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">Comprovantes</label>
+                                <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center bg-gradient-to-br from-gray-50 to-gray-100 hover:from-primary-50 hover:to-blue-50 hover:border-primary-300 transition-all duration-300">
+                                    <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 mb-3"></i>
+                                    <p class="text-sm text-gray-600 mb-3 font-medium">Arraste arquivos aqui ou clique para selecionar</p>
+                                    <button class="px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl text-sm font-semibold hover:from-primary-600 hover:to-primary-700 shadow-card transition-all">
+                                        Selecionar Arquivos
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-card hover:shadow-elevated transition-shadow duration-300">
+                        <div class="flex items-center justify-between mb-6">
+                            <h4 class="text-xl font-bold text-gray-900">03/09/2025 - Quarta-feira</h4>
+                            <div class="flex items-center gap-2 text-sm font-semibold text-amber-700 bg-gradient-to-r from-amber-100 to-yellow-100 px-4 py-2 rounded-full border border-amber-200">
+                                <i class="fa-solid fa-clock"></i>
+                                <span>Pendente</span>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-3">Valor da Despesa</label>
+                                    <input type="text" placeholder="R$ 0,00" class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-3">Tipo de Despesa</label>
+                                    <select class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all">
+                                        <option value="">Selecione...</option>
+                                        <option>Hospedagem</option>
+                                        <option>Alimentação</option>
+                                        <option>Transporte</option>
+                                        <option>Outros</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">Justificativa</label>
+                                <textarea class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-sm font-medium h-24 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all" placeholder="Descreva a despesa..."></textarea>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">Comprovantes</label>
+                                <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center bg-gradient-to-br from-gray-50 to-gray-100 hover:from-primary-50 hover:to-blue-50 hover:border-primary-300 transition-all duration-300">
+                                    <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 mb-3"></i>
+                                    <p class="text-sm text-gray-600 mb-3 font-medium">Arraste arquivos aqui ou clique para selecionar</p>
+                                    <button class="px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl text-sm font-semibold hover:from-primary-600 hover:to-primary-700 shadow-card transition-all">
+                                        Selecionar Arquivos
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="general-observations" class="bg-white border border-gray-200 rounded-2xl p-6 shadow-card">
+                    <h4 class="text-xl font-bold text-gray-900 mb-4">Observações Gerais</h4>
+                    <textarea class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-sm font-medium h-32 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all" placeholder="Adicione observações gerais sobre a prestação de contas..."></textarea>
+                </div>
+
+                <div id="action-buttons" class="flex items-center justify-between pt-8 border-t border-gray-200">
+                    <button class="px-8 py-4 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 flex items-center gap-3 font-semibold transition-all shadow-card">
+                        <i class="fa-solid fa-times"></i>
+                        <span>Cancelar</span>
+                    </button>
+                    
+                    <div class="flex items-center gap-4">
+                        <button class="px-8 py-4 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-xl hover:from-gray-200 hover:to-gray-300 flex items-center gap-3 font-semibold shadow-card transition-all">
+                            <i class="fa-solid fa-save"></i>
+                            <span>Salvar Rascunho</span>
+                        </button>
+                        <button class="px-8 py-4 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-xl hover:from-gray-700 hover:to-gray-800 flex items-center gap-3 font-semibold shadow-elevated transition-all">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Enviar Prestação</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+
+</body></html>
