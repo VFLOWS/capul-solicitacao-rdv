@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html class="" x-data="{ sidebarOpen: true }" :class="{ 'sidebar-collapsed': !sidebarOpen }">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAC - Nova Solicitação</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        window.FontAwesomeConfig = {
+            autoReplaceSvg: 'nest',
+        };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        * { 
+            font-family: 'Inter', sans-serif;
+            box-sizing: border-box;
+        }
+        
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #f9fafb;
+        }
+        
+        #app-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        #sidebar {
+            width: 16rem;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            background-color: #f9fafb;
+            border-right: 1px solid #e5e7eb;
+            transition: width 0.3s ease;
+        }
+        
+        #main-content-wrapper {
+            flex: 1;
+            margin-left: 16rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s ease;
+            width: calc(100% - 16rem);
+        }
+        
+        #header {
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .sidebar-collapsed #sidebar {
+            width: 4rem;
+        }
+        
+        .sidebar-collapsed #main-content-wrapper {
+            margin-left: 4rem;
+            width: calc(100% - 4rem);
+        }
+        
+        .sidebar-text {
+            transition: opacity 0.2s ease, width 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .sidebar-collapsed .sidebar-text {
+            opacity: 0;
+            width: 0;
+            display: inline-block;
+        }
+        
+        .sidebar-logo-text {
+            transition: opacity 0.2s ease, width 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .sidebar-collapsed .sidebar-logo-text {
+            opacity: 0;
+            width: 0;
+            display: inline-block;
+        }
+        
+        #sidebar-toggle {
+            position: absolute;
+            right: -12px;
+            top: 1rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 50;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        #sidebar-toggle:hover {
+            background: #f3f4f6;
+        }
+        
+        .sidebar-collapsed #sidebar-toggle {
+            transform: rotate(180deg);
+        }
+        
+        @media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar-collapsed #sidebar {
+                transform: translateX(0);
+            }
+            
+            #main-content-wrapper {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="h-full text-base-content">
+    <div id="app-container" class="bg-white text-neutral-900 flex min-h-[1200px] w-full">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="flex flex-col">
+            <div id="sidebar-header" class="h-16 flex items-center px-4 border-b border-neutral-200 relative">
+                <div class="flex items-center gap-3 w-full">
+                    <div class="w-8 h-8 bg-neutral-600 flex items-center justify-center rounded-md flex-shrink-0">
+                        <i class="fa-solid fa-seedling text-white"></i>
+                    </div>
+                    <span class="text-lg text-neutral-800 sidebar-logo-text">Capul</span>
+                </div>
+                <button id="sidebar-toggle" @click="sidebarOpen = !sidebarOpen" aria-label="Alternar menu" class="sidebar-toggle-icon">
+                    <i class="fas fa-chevron-left text-xs"></i>
+                </button>
+            </div>
+            <nav id="sidebar-nav" class="flex-1 px-4 py-4">
+                <ul class="space-y-1">
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900">
+                            <i class="fa-solid fa-file-invoice w-5 text-center"></i>
+                            <span class="sidebar-text">Cadastro e Análise</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900">
+                            <i class="fa-solid fa-cash-register w-5 text-center"></i>
+                            <span class="sidebar-text">Fechamento de Caixa</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../RDV/viagem_overview.html" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900">
+                            <i class="fa-solid fa-plane-departure w-5 text-center"></i>
+                            <span class="sidebar-text">Solicitação de Viagem</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./sac_overview_new.html" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md bg-neutral-900 text-white">
+                            <i class="fa-solid fa-headset w-5 text-center"></i>
+                            <span class="sidebar-text">SAC</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div id="main-content-wrapper" class="flex-1 flex flex-col">
+            <header id="header" class="h-16 bg-white border-b border-neutral-200 flex-shrink-0">
+                <div class="flex items-center justify-between h-full px-6">
+                    <div id="page-title">
+                        <h1 class="text-xl text-neutral-800">Nova Solicitação de SAC</h1>
+                    </div>
+                    <div id="user-menu" class="flex items-center gap-4">
+                        <div class="flex items-center gap-2 text-sm text-neutral-600">
+                            <i class="fa-solid fa-user"></i>
+                            <span>João da Silva</span>
+                        </div>
+                        <div class="h-5 w-px bg-neutral-200"></div>
+                        <button class="flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                            <span>Sair</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main id="main-content" class="flex-1 bg-neutral-50 p-6">
+                <div class="max-w-4xl mx-auto">
+                    <!-- Cabeçalho da Página -->
+                    <div class="mb-6 pb-4 border-b border-gray-200 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-2xl font-semibold text-gray-900">Nova Solicitação de SAC</h2>
+                            <p class="mt-1 text-sm text-gray-500">Preencha os campos abaixo para registrar a solicitação.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a href="sac_overview_new.html" class="px-4 py-2 text-sm rounded-md border border-neutral-300 text-neutral-700 hover:bg-neutral-100">Cancelar</a>
+                            <button id="submitRequestBtn" class="bg-blue-800 text-white px-4 py-2 rounded-md text-sm hover:bg-green-700 flex items-center gap-2">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                Enviar Solicitação
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-8">
+                        <!-- Dados do Cliente -->
+                        <div class="bg-white border border-[#007432] rounded-lg overflow-hidden">
+                            <h3 class="bg-[#007432] text-white text-lg font-medium p-4">Dados do SAC</h3>
+                            <div class="p-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="customer-name" class="block text-sm font-medium text-gray-700">Nome Cliente <span class="text-red-500">*</span></label>
+                                        <input type="text" name="customer-name" id="customer-name" placeholder="Nome do Cliente" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800">
+                                    </div>
+                                    <div>
+                                        <label for="customer-type" class="block text-sm font-medium text-gray-700">Tipo Cliente <span class="text-red-500">*</span></label>
+                                        <select id="customer-type" name="customer-type" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800">
+                                            <option>Selecione um Tipo de Cliente</option>
+                                            <option>Associado</option>
+                                            <option>Lojista</option>
+                                            <option>Representante Comercial</option>
+                                            <option>Cliente</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="cpf-cnpj" class="block text-sm font-medium text-gray-700">CPF/CNPJ <span class="text-red-500">*</span></label>
+                                        <input type="text" name="cpf-cnpj" id="cpf-cnpj" placeholder="CPF/CNPJ" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800">
+                                    </div>
+                                    <div>
+                                        <label for="registration" class="block text-sm font-medium text-gray-700">Matrícula <span class="text-red-500">*</span></label>
+                                        <input type="text" name="registration" id="registration" placeholder="Matrícula" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800">
+                                    </div>
+                                    <div>
+                                        <label for="phone" class="block text-sm font-medium text-gray-700">Telefone <span class="text-red-500">*</span></label>
+                                        <input type="text" name="phone" id="phone" placeholder="Telefone" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800">
+                                    </div>
+                                    <div>
+                                        <label for="email" class="block text-sm font-medium text-gray-700">E-mail <span class="text-red-500">*</span></label>
+                                        <input type="email" name="email" id="email" placeholder="E-mail" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800">
+                                    </div>
+                                    <div>
+                                        <label for="address" class="block text-sm font-medium text-gray-700">Endereço</label>
+                                        <input type="text" name="address" id="address" placeholder="Endereço" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800">
+                                    </div>
+                                    <div>
+                                        <label for="city" class="block text-sm font-medium text-gray-700">Cidade</label>
+                                        <input type="text" name="city" id="city" placeholder="Cidade" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800">
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label for="farm-name" class="block text-sm font-medium text-gray-700">Nome Fazenda <span class="text-red-500">*</span></label>
+                                        <input type="text" name="farm-name" id="farm-name" placeholder="Nome da Fazenda" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800">
+                                    </div>
+                                </div>
+
+                                <!-- Descrição do Relato -->
+                                <div class="bg-white p-6 rounded-lg shadow mt-6">
+                                    <h3 class="text-lg font-medium text-gray-900 border-b pb-3 mb-4">Descrição do Relato</h3>
+                                    <div class="mb-6">
+                                        <label for="request-type" class="block text-sm font-medium text-gray-700">Tipo Solicitação*</label>
+                                        <select id="request-type" name="request-type" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800">
+                                            <option>Selecione um Tipo de Solicitação</option>
+                                            <option>Dúvida</option>
+                                            <option>Solicitação</option>
+                                            <option>Reclamação</option>
+                                            <option>Sugestão</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="description" class="block text-sm font-medium text-gray-700">Descreva suas dúvidas, sugestões e/ou solicitações*</label>
+                                        <textarea id="description" name="description" rows="4" class="mt-1 shadow-sm block w-full focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-300 rounded-md"></textarea>
+                                        <p class="mt-2 text-sm text-red-600">* Registre no campo acima suas informações verdadeiras.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Anexos -->
+                                <div class="bg-white p-6 rounded-lg shadow mt-6">
+                                    <h3 class="text-lg font-medium text-gray-900 border-b pb-3 mb-4">Anexos</h3>
+                                    <div class="space-y-4">
+                                        <!-- Seção de Anexos -->
+                                        <div id="attachments-section" class="mt-6" x-data="{
+                                            files: [],
+                                            isDragging: false,
+                                            handleDragOver(event) {
+                                                event.preventDefault();
+                                                this.isDragging = true;
+                                            },
+                                            handleDragLeave() {
+                                                this.isDragging = false;
+                                            },
+                                            handleDrop(event) {
+                                                event.preventDefault();
+                                                this.isDragging = false;
+                                                const droppedFiles = event.dataTransfer.files;
+                                                this.handleFiles(droppedFiles);
+                                            },
+                                            handleFileSelect(event) {
+                                                const selectedFiles = event.target.files;
+                                                this.handleFiles(selectedFiles);
+                                            },
+                                            handleFiles(fileList) {
+                                                for (let i = 0; i < fileList.length; i++) {
+                                                    const file = fileList[i];
+                                                    // Check file type (PDF, JPG, PNG, etc.)
+                                                    const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                                                    if (!validTypes.includes(file.type)) {
+                                                        alert(`Tipo de arquivo não suportado: ${file.name}. Por favor, envie apenas PDF, imagens ou documentos.`);
+                                                        continue;
+                                                    }
+                                                    
+                                                    // Check file size (max 5MB)
+                                                    const maxSize = 5 * 1024 * 1024; // 5MB
+                                                    if (file.size > maxSize) {
+                                                        alert(`Arquivo muito grande: ${file.name}. O tamanho máximo permitido é 5MB.`);
+                                                        continue;
+                                                    }
+                                                    
+                                                    // Add file to the list
+                                                    this.files.push({
+                                                        name: file.name,
+                                                        size: this.formatFileSize(file.size),
+                                                        type: file.type,
+                                                        file: file
+                                                    });
+                                                }
+                                                // Reset file input to allow selecting the same file again
+                                                document.getElementById('file-upload').value = '';
+                                            },
+                                            formatFileSize(bytes) {
+                                                if (bytes === 0) return '0 Bytes';
+                                                const k = 1024;
+                                                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                                                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                                                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                                            },
+                                            removeFile(index) {
+                                                this.files.splice(index, 1);
+                                            }
+                                        }">
+                                            <div 
+                                                @dragover.prevent="handleDragOver"
+                                                @dragleave.prevent="isDragging = false"
+                                                @drop.prevent="handleDrop"
+                                                @click="document.getElementById('file-upload').click()"
+                                                :class="{ 'border-blue-500 bg-blue-50': isDragging }"
+                                                class="border-2 border-dashed border-neutral-300 rounded-lg p-6 text-center cursor-pointer hover:bg-neutral-50 transition-colors"
+                                            >
+                                                <i class="fas fa-cloud-upload-alt text-3xl text-neutral-400 mb-2"></i>
+                                                <p class="text-sm text-neutral-600 mb-1">
+                                                    <span class="font-medium text-blue-600">Clique para fazer upload</span> ou arraste os arquivos
+                                                </p>
+                                                <p class="text-xs text-neutral-500">Formatos aceitos: PDF, JPG, PNG, DOC, DOCX (máx. 5MB cada)</p>
+                                                <input 
+                                                    id="file-upload" 
+                                                    type="file" 
+                                                    class="hidden" 
+                                                    multiple 
+                                                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                                                    @change="handleFileSelect"
+                                                >
+                                            </div>
+                                            
+                                            <!-- Lista de Arquivos Anexados -->
+                                            <div class="mt-4" x-show="files.length > 0">
+                                                <h4 class="text-sm font-medium text-neutral-700 mb-2">Arquivos anexados</h4>
+                                                <div class="space-y-2">
+                                                    <template x-for="(file, index) in files" :key="index">
+                                                        <div class="flex items-center justify-between p-3 bg-neutral-50 rounded-md border border-neutral-200">
+                                                            <div class="flex items-center space-x-3">
+                                                                <i class="fas fa-file-alt text-neutral-400"></i>
+                                                                <div class="min-w-0">
+                                                                    <p class="text-sm font-medium text-neutral-900 truncate" x-text="file.name"></p>
+                                                                    <p class="text-xs text-neutral-500" x-text="file.size"></p>
+                                                                </div>
+                                                            </div>
+                                                            <button 
+                                                                @click.stop="removeFile(index)" 
+                                                                class="text-neutral-400 hover:text-neutral-600 focus:outline-none"
+                                                                title="Remover arquivo"
+                                                            >
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </main>
+        </div>        
+    </div>
+  <!-- Processing Modal -->
+  <div id="processingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center">
+        <div class="w-16 h-16 border-4 border-neutral-200 border-t-neutral-800 rounded-full animate-spin mx-auto mb-4"></div>
+        <h3 class="text-xl font-medium text-neutral-900 mb-2">Processando</h3>
+        <p class="text-neutral-600">Aguarde enquanto processamos sua solicitação...</p>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center">
+        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fa-solid fa-check text-green-600 text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-medium text-neutral-900 mb-2">Solicitação Enviada</h3>
+        <p class="text-neutral-600 mb-6">Sua solicitação foi enviada com sucesso! Você receberá um número de protocolo em breve.</p>
+        <button id="closeModalBtn" class="w-full bg-neutral-800 text-white px-4 py-2 rounded-md hover:bg-neutral-700">
+            Voltar para Minhas Solicitações
+        </button>
+    </div>
+</div>
+
+<style>
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .animate-spin {
+        animation: spin 1s linear infinite;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const submitBtn = document.getElementById('submitRequestBtn');
+        const processingModal = document.getElementById('processingModal');
+        const successModal = document.getElementById('successModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        
+        // Show processing modal first
+        function showProcessingModal() {
+            processingModal.classList.remove('hidden');
+            
+            // Simulate API call/processing time (2 seconds)
+            setTimeout(() => {
+                processingModal.classList.add('hidden');
+                showSuccessModal();
+            }, 2000);
+        }
+        
+        // Show success modal after processing
+        function showSuccessModal() {
+            successModal.classList.remove('hidden');
+        }
+        
+        // Handle form submission
+        submitBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showProcessingModal();
+        });
+        
+        // Handle close button
+        closeModalBtn.addEventListener('click', function() {
+            successModal.classList.add('hidden');
+            window.location.href = 'sac_overview_new.html';
+        });
+        
+        // Close modal when clicking outside
+        successModal.addEventListener('click', function(e) {
+            if (e.target === successModal) {
+                successModal.classList.add('hidden');
+                window.location.href = 'sac_overview_new.html';
+            }
+        });
+    });
+</script>    
+</body>
+</html>
