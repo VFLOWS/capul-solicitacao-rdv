@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html class="" x-data="{
+    actionItem: {
+        type: '',
+        area: '',
+        responsible: '',
+        dueDate: '',
+        description: '',
+        priority: 'medium',
+        attachments: []
+    },
+    isNew: true,
+    isProcessing: false
+}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Item de Ação - SAC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        * { 
+            font-family: 'Inter', sans-serif;
+            box-sizing: border-box;
+        }
+        
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl overflow-hidden">
+            <!-- Header -->
+            <div class="bg-[#007432] px-6 py-4">
+                <h2 class="text-lg font-medium text-white" x-text="isNew ? 'Adicionar Item de Ação' : 'Editar Item de Ação'"></h2>
+            </div>
+            
+            <!-- Form -->
+            <form class="p-6 space-y-6" @submit.prevent="saveActionItem">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Type -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">Tipo de Ação <span class="text-red-500">*</span></label>
+                        <select x-model="actionItem.type" required
+                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                            <option value="">Selecione...</option>
+                            <option value="correcao">Correção</option>
+                            <option value="melhoria">Melhoria</option>
+                            <option value="prevencao">Prevenção</option>
+                            <option value="treinamento">Treinamento</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Area -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">Área Responsável <span class="text-red-500">*</span></label>
+                        <select x-model="actionItem.area" required
+                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                            <option value="">Selecione...</option>
+                            <option value="atendimento">Atendimento</option>
+                            <option value="tecnica">Técnica</option>
+                            <option value="comercial">Comercial</option>
+                            <option value="administrativo">Administrativo</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Responsible -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">Responsável <span class="text-red-500">*</span></label>
+                        <input type="text" x-model="actionItem.responsible" required
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    
+                    <!-- Due Date -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">Prazo <span class="text-red-500">*</span></label>
+                        <input type="date" x-model="actionItem.dueDate" required min="2025-01-01"
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    
+                    <!-- Priority -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">Prioridade</label>
+                        <div class="mt-1 flex space-x-4">
+                            <label class="inline-flex items-center">
+                                <input type="radio" x-model="actionItem.priority" value="low" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <span class="ml-2 text-sm text-gray-700">Baixa</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" x-model="actionItem.priority" value="medium" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <span class="ml-2 text-sm text-gray-700">Média</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" x-model="actionItem.priority" value="high" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <span class="ml-2 text-sm text-gray-700">Alta</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Description -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Descrição <span class="text-red-500">*</span></label>
+                    <textarea x-model="actionItem.description" rows="4" required
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        placeholder="Descreva detalhadamente a ação a ser tomada..."></textarea>
+                </div>
+                
+                <!-- Attachments -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">Anexos</label>
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                        <div class="space-y-1 text-center">
+                            <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl"></i>
+                            <div class="flex text-sm text-gray-600">
+                                <label class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500">
+                                    <span>Enviar um arquivo</span>
+                                    <input type="file" class="sr-only" multiple @change="handleFileUpload($event)">
+                                </label>
+                                <p class="pl-1">ou arraste e solte</p>
+                            </div>
+                            <p class="text-xs text-gray-500">PNG, JPG, PDF até 10MB</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Uploaded files list -->
+                    <div x-show="actionItem.attachments.length > 0" class="mt-4 space-y-2">
+                        <h4 class="text-sm font-medium text-gray-700">Arquivos anexados</h4>
+                        <ul class="space-y-2">
+                            <template x-for="(file, index) in actionItem.attachments" :key="index">
+                                <li class="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-file-alt text-gray-400"></i>
+                                        <span x-text="file.name" class="text-sm text-gray-700 truncate max-w-xs"></span>
+                                    </div>
+                                    <button type="button" @click="removeFile(index)" class="text-red-500 hover:text-red-700">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Form Actions -->
+                <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                    <button type="button" @click="window.history.back()"
+                        class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Cancelar
+                    </button>
+                    <button type="submit" :disabled="isProcessing"
+                        class="inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span x-show="!isProcessing" x-text="isNew ? 'Adicionar Item' : 'Salvar Alterações'"></span>
+                        <span x-show="isProcessing" class="flex items-center">
+                            <i class="fas fa-spinner fa-spin mr-2"></i> Processando...
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('actionItemForm', () => ({
+                actionItem: {
+                    type: '',
+                    area: '',
+                    responsible: '',
+                    dueDate: new Date().toISOString().split('T')[0],
+                    description: '',
+                    priority: 'medium',
+                    attachments: []
+                },
+                isNew: true,
+                isProcessing: false,
+                
+                init() {
+                    // Check if we're editing an existing item
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const editId = urlParams.get('edit');
+                    
+                    if (editId) {
+                        this.isNew = false;
+                        // In a real app, you would fetch the item data here
+                        // For demo purposes, we'll simulate loading
+                        this.isProcessing = true;
+                        
+                        // Simulate API call
+                        setTimeout(() => {
+                            this.actionItem = {
+                                type: 'correcao',
+                                area: 'atendimento',
+                                responsible: 'João Silva',
+                                dueDate: '2025-09-15',
+                                description: 'Corrigir falha no atendimento ao cliente conforme relato no chamado.',
+                                priority: 'high',
+                                attachments: [
+                                    { id: 1, name: 'evidencia1.jpg', size: '2.4 MB' },
+                                    { id: 2, name: 'relatorio.pdf', size: '1.8 MB' }
+                                ]
+                            };
+                            this.isProcessing = false;
+                        }, 500);
+                    }
+                },
+                
+                async saveActionItem() {
+                    this.isProcessing = true;
+                    
+                    try {
+                        // Simulate API call
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        
+                        // Show success message
+                        alert(this.isNew ? 'Item de ação adicionado com sucesso!' : 'Alterações salvas com sucesso!');
+                        
+                        // In a real app, you would redirect back or update the parent window
+                        window.history.back();
+                    } catch (error) {
+                        console.error('Error saving action item:', error);
+                        alert('Ocorreu um erro ao salvar. Por favor, tente novamente.');
+                    } finally {
+                        this.isProcessing = false;
+                    }
+                },
+                
+                handleFileUpload(event) {
+                    const files = Array.from(event.target.files);
+                    files.forEach(file => {
+                        this.actionItem.attachments.push({
+                            id: Date.now() + Math.random().toString(36).substr(2, 9),
+                            name: file.name,
+                            size: this.formatFileSize(file.size)
+                        });
+                    });
+                    // Reset the file input
+                    event.target.value = '';
+                },
+                
+                removeFile(index) {
+                    this.actionItem.attachments.splice(index, 1);
+                },
+                
+                formatFileSize(bytes) {
+                    if (bytes === 0) return '0 Bytes';
+                    const k = 1024;
+                    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                }
+            }));
+        });
+    </script>
+</body>
+</html>
