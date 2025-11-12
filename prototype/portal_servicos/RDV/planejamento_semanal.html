@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html class="" x-data="{ sidebarOpen: true }" :class="{ 'sidebar-collapsed': !sidebarOpen }">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planejamento Semanal - Viagens</title>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        window.FontAwesomeConfig = {
+            autoReplaceSvg: 'nest',
+        };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        * { 
+            font-family: 'Inter', sans-serif;
+            box-sizing: border-box;
+        }
+        
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #app-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        #sidebar {
+            width: 16rem;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            background-color: #f9fafb;
+            border-right: 1px solid #e5e7eb;
+            transition: width 0.3s ease;
+        }
+        
+        #main-content-wrapper {
+            flex: 1;
+            margin-left: 16rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s ease;
+            width: calc(100% - 16rem);
+        }
+        
+        #header {
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .sidebar-collapsed #sidebar {
+            width: 4rem;
+        }
+        
+        .sidebar-collapsed #main-content-wrapper {
+            margin-left: 4rem;
+            width: calc(100% - 4rem);
+        }
+        
+        .sidebar-text {
+            transition: opacity 0.2s ease, width 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .sidebar-collapsed .sidebar-text {
+            opacity: 0;
+            width: 0;
+            display: inline-block;
+        }
+        
+        .sidebar-logo-text {
+            transition: opacity 0.2s ease, width 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .sidebar-collapsed .sidebar-logo-text {
+            opacity: 0;
+            width: 0;
+            display: inline-block;
+        }
+        
+        #sidebar-toggle {
+            position: absolute;
+            right: -12px;
+            top: 1rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 50;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        #sidebar-toggle:hover {
+            background: #f3f4f6;
+        }
+        
+        .sidebar-collapsed #sidebar-toggle {
+            transform: rotate(180deg);
+        }
+        
+        @media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar-collapsed #sidebar {
+                transform: translateX(0);
+            }
+            
+            #main-content-wrapper {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="h-full text-base-content">
+    <div id="app-container" class="bg-white text-neutral-900 flex min-h-[1200px] w-full">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="flex flex-col">
+            <div id="sidebar-header" class="h-16 flex items-center px-4 border-b border-neutral-200 relative">
+                <div class="flex items-center gap-3 w-full">
+                    <div class="w-8 h-8 bg-neutral-600 flex items-center justify-center rounded-md flex-shrink-0">
+                        <i class="fa-solid fa-seedling text-white"></i>
+                    </div>
+                    <span class="text-lg text-neutral-800 sidebar-logo-text">Capul</span>
+                </div>
+                <button id="sidebar-toggle" @click="sidebarOpen = !sidebarOpen" aria-label="Alternar menu" class="sidebar-toggle-icon">
+                    <i class="fas fa-chevron-left text-xs"></i>
+                </button>
+            </div>
+            <nav id="sidebar-nav" class="flex-1 px-4 py-4">
+                <ul class="space-y-1">
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900">
+                            <i class="fa-solid fa-file-invoice w-5 text-center"></i>
+                            <span class="sidebar-text">Cadastro e Análise</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900">
+                            <i class="fa-solid fa-cash-register w-5 text-center"></i>
+                            <span class="sidebar-text">Fechamento de Caixa</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../RDV/viagem_overview.html" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md bg-neutral-900 text-white">
+                            <i class="fa-solid fa-plane-departure w-5 text-center"></i>
+                            <span class="sidebar-text">Solicitação de Viagem</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../SAC/sac_overview_new.html" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md bg-neutral-100 text-neutral-900">
+                            <i class="fa-solid fa-headset w-5 text-center"></i>
+                            <span class="sidebar-text">SAC</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+  
+      <div id="main-content-wrapper" class="flex-1 flex flex-col">
+          <header id="header" class="h-16 bg-white border-b border-neutral-200 flex-shrink-0">
+              <div class="flex items-center justify-between h-full px-6">
+                  <div id="page-title">
+                      <h1 class="text-xl text-neutral-800">Planejamento da Viagem</h1>
+                  </div>
+                  <div id="user-menu" class="flex items-center gap-4">
+                      <div class="flex items-center gap-2 text-sm text-neutral-600">
+                          <i class="fa-solid fa-user"></i>
+                          <span>Joaquim Rodrigo Moreira</span>
+                      </div>
+                      <div class="h-5 w-px bg-neutral-200"></div>
+                      <span class="flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 cursor-pointer">
+                          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                          <span>Sair</span>
+                      </span>
+                  </div>
+              </div>
+          </header>
+  
+          <main id="main-content" class="flex-1 bg-neutral-50 p-6">
+              <div class="flex gap-6">
+                  <!-- Sidebar de Status da Solicitação -->
+                  <div class="w-72 flex-shrink-0">
+                      <div class="bg-white rounded-lg border border-neutral-200 p-4 sticky top-24">
+                          <h3 class="font-medium mb-4 text-neutral-800">Status da Solicitação</h3>
+                          <div class="space-y-4">
+                              <div class="flex items-start gap-3">
+                                  <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center"><i class="fas fa-check text-green-600 text-xs"></i></div>
+                                  <div><p class="text-sm font-medium">Solicitação Enviada</p><p class="text-xs text-gray-500">01/10/2025 14:30</p></div>
+                              </div>
+                              <div class="flex items-start gap-3">
+                                  <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center"><i class="fas fa-check text-green-600 text-xs"></i></div>
+                                  <div><p class="text-sm font-medium">Superior Imediato - Aprovado</p><p class="text-xs text-gray-500">02/10/2025 09:15</p></div>
+                              </div>
+                              <div class="flex items-start gap-3">
+                                  <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center"><i class="fas fa-check text-green-600 text-xs"></i></div>
+                                  <div><p class="text-sm font-medium">Liberação de Adiantamento</p><p class="text-xs text-gray-500">02/10/2025 16:15</p></div>
+                              </div>
+                              <div class="flex items-start gap-3">
+                                  <div class="mt-1 w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center"><i class="fas fa-spinner text-white text-xs animate-spin"></i></div>
+                                  <div><p class="text-sm font-medium">Planejamento Semanal</p><p class="text-xs text-gray-500">Em andamento</p></div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <!-- Conteúdo Principal -->
+                  <div class="flex-1">
+                      <div id="weekly-planning-container" class="bg-white border border-neutral-200 rounded-lg p-6" x-data="{
+                          destinations: ['MG/Uberlândia', 'SP/São Paulo', 'GO/Rio Verde'],
+                          plans: [
+                              { startDate: '2025-10-06', endDate: '2025-10-07', client: 'AgroSoja Comércio Agrícola', farm: 'Fazenda Santa Maria', location: 'GO/Rio Verde', observation: 'Reunião de alinhamento sobre a colheita de soja.' },
+                              { startDate: '2025-10-08', endDate: '2025-10-08', client: 'Cooperativa Agropecuária Vale do Paranaíba', farm: 'Sede', location: 'MG/Capinópolis', observation: 'Apresentar novo portfólio de produtos.' }
+                          ],
+                          addPlan() {
+                              this.plans.push({ startDate: '', endDate: '', client: '', farm: '', location: '', observation: '' });
+                          },
+                          removePlan(index) {
+                              this.plans.splice(index, 1);
+                          },
+                          isPlanned(dest) {
+                              return this.plans.some(plan => plan.location.trim().toLowerCase() === dest.trim().toLowerCase());
+                          }
+                      }">
+                          <div id="form-header" class="flex justify-between items-start mb-6">
+                              <div>
+                                  <h2 class="text-xl text-neutral-900">Detalhar Roteiro da Viagem</h2>
+                                  <p class="text-sm text-neutral-500 mt-1">Adicione os detalhes de cada visita planejada para a sua solicitação.</p>
+                              </div>
+                              <div class="flex items-center gap-2">
+                                  <button id="savePlanBtn" class="bg-blue-800 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 flex items-center gap-2">
+                                      <i class="fa-solid fa-save"></i>
+                                      Salvar Roteiro
+                                  </button>
+                              </div>
+                          </div>
+
+                          <!-- Resumo da RDV -->
+                          <div id="rdv-summary" class="mb-6 p-4 border border-neutral-200 rounded-lg bg-neutral-50">
+                              <h3 class="text-lg font-medium text-neutral-800 mb-3">Referente à Solicitação de Viagem: #00451</h3>
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                                  <div>
+                                      <span class="font-medium text-neutral-600 block mb-1">Período da Viagem:</span>
+                                      <span class="text-neutral-800">06/10/2025 a 10/10/2025</span>
+                                  </div>
+                                  <div class="row-span-2">
+                                      <span class="font-medium text-neutral-600 block mb-1">Justificativa:</span>
+                                      <p class="text-neutral-800">Visita técnica a clientes e prospecção de novos negócios na região do Triângulo Mineiro.</p>
+                                  </div>
+                                  <div>
+                                      <span class="font-medium text-neutral-600 block mb-1">Destinos Informados:</span>
+                                      <div class="flex flex-wrap gap-2">
+                                          <template x-for="dest in destinations" :key="dest">
+                                              <span class="px-3 py-1 text-xs font-medium rounded-full flex items-center gap-1.5 border"
+                                                    :class="isPlanned(dest) 
+                                                        ? 'bg-green-100 text-green-800 border-green-200' 
+                                                        : 'bg-neutral-100 text-neutral-700 border-neutral-200'">
+                                                <i x-show="isPlanned(dest)" class="fa-solid fa-check"></i>
+                                                <span x-text="dest"></span>
+                                              </span>
+                                          </template>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+  
+                          <!-- Tabela de Planejamento -->
+                          <div class="space-y-4">
+                              <template x-for="(plan, index) in plans" :key="index">
+                                  <div class="p-4 bg-neutral-50 rounded-lg border">
+                                      <div class="grid grid-cols-12 gap-4 items-start">
+                                          <!-- Linha de Inputs -->
+                                          <div class="col-span-2">
+                                              <label class="text-sm text-neutral-700 block mb-1">Data Início</label>
+                                              <input type="date" x-model="plan.startDate" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800">
+                                          </div>
+                                          <div class="col-span-2">
+                                              <label class="text-sm text-neutral-700 block mb-1">Data Fim</label>
+                                              <input type="date" x-model="plan.endDate" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800">
+                                          </div>
+                                          <div class="col-span-3">
+                                              <label class="text-sm text-neutral-700 block mb-1">Cliente</label>
+                                              <input type="text" x-model="plan.client" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800" placeholder="Nome do Cliente">
+                                          </div>
+                                          <div class="col-span-2">
+                                              <label class="text-sm text-neutral-700 block mb-1">Fazenda</label>
+                                              <input type="text" x-model="plan.farm" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800" placeholder="Nome da Fazenda">
+                                          </div>
+                                          <div class="col-span-2">
+                                              <label class="text-sm text-neutral-700 block mb-1">Estado/Cidade</label>
+                                              <input type="text" x-model="plan.location" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800" placeholder="UF/Cidade">
+                                          </div>
+                                          <div class="col-span-1 flex items-end h-full">
+                                              <button @click="removePlan(index)" class="w-full h-[42px] text-sm text-neutral-500 hover:text-red-600 hover:bg-red-50 rounded-md flex justify-center items-center border border-transparent hover:border-red-200" title="Remover Planejamento">
+                                                  <i class="fa-solid fa-trash-can"></i>
+                                              </button>
+                                          </div>
+                                      </div>
+                                      <!-- Campo de Observação -->
+                                      <div class="mt-3">
+                                          <label class="text-sm text-neutral-700 block mb-1">Observação</label>
+                                          <textarea x-model="plan.observation" rows="2" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800" placeholder="Detalhes da visita, pontos de atenção, etc."></textarea>
+                                      </div>
+                                  </div>
+                              </template>
+                          </div>
+                          
+                          <button @click="addPlan()" class="mt-4 px-4 py-2 text-sm rounded-md border border-dashed border-neutral-400 text-neutral-600 hover:bg-neutral-100 flex items-center gap-2">
+                              <i class="fa-solid fa-plus"></i>
+                              Adicionar Visita
+                          </button>
+                      </div>
+                  </div>
+              </div>
+              </div>
+          </main>
+      </div>
+  </div>
+</body>
+</html>

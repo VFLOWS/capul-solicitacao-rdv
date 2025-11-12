@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html class="" x-data="{ sidebarOpen: true }" :class="{ 'sidebar-collapsed': !sidebarOpen }">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prestação de Contas por Roteiro - Viagens</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        window.FontAwesomeConfig = { autoReplaceSvg: 'nest' };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
+        ::-webkit-scrollbar { display: none; }
+        body { min-height: 100vh; display: flex; flex-direction: column; }
+        #app-container { display: flex; min-height: 100vh; position: relative; }
+        #sidebar { width: 16rem; height: 100vh; position: fixed; top: 0; left: 0; z-index: 40; display: flex; flex-direction: column; background-color: #f9fafb; border-right: 1px solid #e5e7eb; transition: width 0.3s ease; }
+        #main-content-wrapper { flex: 1; margin-left: 16rem; min-height: 100vh; display: flex; flex-direction: column; transition: margin-left 0.3s ease; width: calc(100% - 16rem); }
+        #header { width: 100%; position: sticky; top: 0; z-index: 30; background-color: white; border-bottom: 1px solid #e5e7eb; }
+        .sidebar-collapsed #sidebar { width: 4rem; }
+        .sidebar-collapsed #main-content-wrapper { margin-left: 4rem; width: calc(100% - 4rem); }
+        .sidebar-text, .sidebar-logo-text { transition: opacity 0.2s ease, width 0.2s ease; white-space: nowrap; overflow: hidden; }
+        .sidebar-collapsed .sidebar-text, .sidebar-collapsed .sidebar-logo-text { opacity: 0; width: 0; display: inline-block; }
+        #sidebar-toggle { position: absolute; right: -12px; top: 1rem; background: white; border: 1px solid #e5e7eb; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: transform 0.2s ease; }
+        #sidebar-toggle:hover { background: #f3f4f6; }
+        .sidebar-collapsed #sidebar-toggle { transform: rotate(180deg); }
+    </style>
+</head>
+<body class="h-full text-base-content overflow-x-hidden">
+    <div id="app-container" class="bg-white text-neutral-900">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="flex flex-col">
+            <div id="sidebar-header" class="h-16 flex items-center px-4 border-b border-neutral-200 relative">
+                <div class="flex items-center gap-3 w-full">
+                    <div class="w-8 h-8 bg-neutral-600 flex items-center justify-center rounded-md flex-shrink-0">
+                        <i class="fa-solid fa-seedling text-white"></i>
+                    </div>
+                    <span class="text-lg text-neutral-800 sidebar-logo-text">Capul</span>
+                </div>
+                <button id="sidebar-toggle" @click="sidebarOpen = !sidebarOpen" aria-label="Alternar menu" class="sidebar-toggle-icon">
+                    <i class="fas fa-chevron-left text-xs"></i>
+                </button>
+            </div>
+            <nav id="sidebar-nav" class="flex-1 px-4 py-4">
+                <ul class="space-y-1">
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900">
+                            <i class="fa-solid fa-file-invoice w-5 text-center"></i>
+                            <span class="sidebar-text">Cadastro e Análise</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900">
+                            <i class="fa-solid fa-cash-register w-5 text-center"></i>
+                            <span class="sidebar-text">Fechamento de Caixa</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../RDV/viagem_overview.html" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md bg-neutral-900 text-white">
+                            <i class="fa-solid fa-plane-departure w-5 text-center"></i>
+                            <span class="sidebar-text">Solicitação de Viagem</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../SAC/sac_overview_new.html" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md bg-neutral-100 text-neutral-900">
+                            <i class="fa-solid fa-headset w-5 text-center"></i>
+                            <span class="sidebar-text">SAC</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div id="main-content-wrapper">
+            <header id="header" class="h-16 bg-white border-b border-neutral-200 flex-shrink-0">
+                <div class="flex items-center justify-between h-full px-6">
+                    <div id="page-title">
+                        <h1 class="text-xl text-neutral-800">Prestação de Contas da Viagem #00451</h1>
+                    </div>
+                    <div id="user-menu" class="flex items-center gap-4">
+                        <div class="flex items-center gap-2 text-sm text-neutral-600">
+                            <i class="fa-solid fa-user"></i>
+                            <span>Joaquim Rodrigo Moreira</span>
+                        </div>
+                        <div class="h-5 w-px bg-neutral-200"></div>
+                        <span class="flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 cursor-pointer">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                            <span>Sair</span>
+                        </span>
+                    </div>
+                </div>
+            </header>
+
+            <main id="main-content" class="flex-1 bg-neutral-50 p-6">
+                <div class="flex gap-6">
+                    <!-- Sidebar de Status da Solicitação -->
+                    <div class="w-72 flex-shrink-0">
+                        <div class="bg-white rounded-lg border border-neutral-200 p-4 sticky top-24">
+                            <h3 class="font-medium mb-4 text-neutral-800">Status da Solicitação</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center"><i class="fas fa-check text-green-600 text-xs"></i></div>
+                                    <div><p class="text-sm font-medium">Solicitação Enviada</p><p class="text-xs text-gray-500">01/10/2025 14:30</p></div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center"><i class="fas fa-check text-green-600 text-xs"></i></div>
+                                    <div><p class="text-sm font-medium">Superior Imediato - Aprovado</p><p class="text-xs text-gray-500">02/10/2025 09:15</p></div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center"><i class="fas fa-check text-green-600 text-xs"></i></div>
+                                    <div><p class="text-sm font-medium">Liberação de Adiantamento</p><p class="text-xs text-gray-500">02/10/2025 16:15</p></div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center"><i class="fas fa-check text-green-600 text-xs"></i></div>
+                                    <div><p class="text-sm font-medium">Planejamento Semanal</p><p class="text-xs text-gray-500">03/10/2025 10:00</p></div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center"><i class="fas fa-spinner text-white text-xs animate-spin"></i></div>
+                                    <div><p class="text-sm font-medium">Prestação de Contas</p><p class="text-xs text-gray-500">Em andamento</p></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conteúdo Principal -->
+                    <div class="flex-1" x-data="prestacaoDeContas()">
+                          <!-- Resumo da RDV -->
+                          <div id="rdv-summary" class="mb-6 p-4 border border-neutral-200 rounded-lg bg-neutral-50">
+                              <h3 class="text-lg font-medium text-neutral-800 mb-3">Referente à Solicitação de Viagem: #00451</h3>
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                                  <div>
+                                      <span class="font-medium text-neutral-600 block mb-1">Período da Viagem:</span>
+                                      <span class="text-neutral-800">06/10/2025 a 10/10/2025</span>
+                                  </div>
+                                  <div class="row-span-2">
+                                      <span class="font-medium text-neutral-600 block mb-1">Justificativa:</span>
+                                      <p class="text-neutral-800">Visita técnica a clientes e prospecção de novos negócios na região do Triângulo Mineiro.</p>
+                                  </div>
+                                  <div>
+                                      <span class="font-medium text-neutral-600 block mb-1">Destinos Informados:</span>
+                                      <div class="flex flex-wrap gap-2">
+                                          <template x-for="dest in destinations" :key="dest">
+                                              <span class="px-3 py-1 text-xs font-medium rounded-full flex items-center gap-1.5 border"
+                                                    :class="isPlanned(dest) 
+                                                        ? 'bg-green-100 text-green-800 border-green-200' 
+                                                        : 'bg-neutral-100 text-neutral-700 border-neutral-200'">
+                                                <i x-show="isPlanned(dest)" class="fa-solid fa-check"></i>
+                                                <span x-text="dest"></span>
+                                              </span>
+                                          </template>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+
+                        <!-- Roteiro Planejado -->
+                        <div class="space-y-6">
+                            <h2 class="text-xl font-semibold text-neutral-800">Roteiro e Despesas</h2>
+                            <template x-for="(itemRoteiro, roteiroIndex) in roteiro" :key="itemRoteiro.id">
+                                <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                                    <!-- Cabeçalho do Item do Roteiro (Clicável) -->
+                                    <div @click="itemRoteiro.isExpanded = !itemRoteiro.isExpanded" class="p-4 bg-gray-50 border-b flex justify-between items-center cursor-pointer hover:bg-gray-100">
+                                        <div>
+                                            <p class="font-bold text-lg text-gray-800" x-text="`Visita: ${itemRoteiro.cliente}`"></p>
+                                            <p class="text-sm text-gray-600" x-text="`${itemRoteiro.location} | Planejado: ${itemRoteiro.startDate} a ${itemRoteiro.endDate}`"></p>
+                                        </div>
+                                        <button class="text-gray-500">
+                                            <i class="fa-solid fa-chevron-down transition-transform" :class="{ 'rotate-180': itemRoteiro.isExpanded }"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Corpo do Item do Roteiro (Colapsável) -->
+                                    <div x-show="itemRoteiro.isExpanded" x-collapse class="p-6">
+                                        <h4 class="font-semibold text-gray-800 mb-4">Atividades Diárias e Despesas</h4>
+                                        
+                                        <!-- Formulário para Adicionar Atividade -->
+                                        <div class="p-4 bg-gray-50 rounded-lg mb-6 border border-dashed">
+                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+                                                <div>
+                                                    <label class="block text-xs font-medium text-gray-600 mb-1">Data da Atividade</label>
+                                                    <input type="date" x-model="itemRoteiro.novaAtividade.data" class="w-full px-3 py-2 bg-white border-gray-300 rounded-md text-sm">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs font-medium text-gray-600 mb-1">Atividade Realizada</label>
+                                                    <select x-model="itemRoteiro.novaAtividade.tipo" class="w-full px-3 py-2 bg-white border-gray-300 rounded-md text-sm">
+                                                        <option value="" disabled>Selecione</option>
+                                                        <option>NEGOCIAÇÃO/PROSPECÇÃO</option>
+                                                        <option>POS VENDA/VISITA TECNICA</option>
+                                                        <option>COLETA PEDIDO/LOGISTICA</option>
+                                                        <option>OUTRO*</option>
+                                                    </select>
+                                                </div>
+                                                <div class="md:col-span-3">
+                                                    <label class="block text-xs font-medium text-gray-600 mb-1">Observação</label>
+                                                    <textarea x-model="itemRoteiro.novaAtividade.observacao" rows="3" class="w-full px-3 py-2 bg-white border-gray-300 rounded-md text-sm" placeholder="Descreva a atividade, resultados, etc."></textarea>
+                                                </div>
+                                                <div class="md:col-span-3">
+                                                    <label class="block text-xs font-medium text-gray-600 mb-1">Anexos da Atividade</label>
+                                                    <div class="flex items-center justify-center w-full">
+                                                        <label :for="'new-file-upload-' + itemRoteiro.id" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-white hover:bg-gray-50">
+                                                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                                                <i class="fa-solid fa-cloud-arrow-up text-gray-400 text-3xl"></i>
+                                                                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Clique para fazer upload</span> ou arraste os arquivos</p>
+                                                                <p class="text-xs text-gray-500">PDF, JPG, PNG, DOC, DOCX (máx. 5MB cada)</p>
+                                                            </div>
+                                                            <input :id="'new-file-upload-' + itemRoteiro.id" type="file" class="hidden" multiple />
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="md:col-span-3">
+                                                    <button @click="adicionarAtividade(roteiroIndex)" class="w-full px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-semibold hover:bg-blue-700 flex items-center justify-center gap-2">
+                                                        <i class="fa-solid fa-plus"></i>
+                                                        <span>Adicionar Atividade</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Lista de Atividades do Dia -->
+                                        <div class="space-y-4">
+                                            <template x-for="(atividade, atividadeIndex) in itemRoteiro.atividades" :key="atividade.id">
+                                                <div class="border rounded-md">
+                                                    <div class="bg-gray-100 p-3 flex justify-between items-center">
+                                                        <p class="font-semibold text-sm text-gray-700" x-text="`Atividade de ${formatarData(atividade.data)} - ${atividade.tipo}`"></p>
+                                                        <button @click="removerAtividade(roteiroIndex, atividadeIndex)" class="text-red-500 hover:text-red-700 text-xs"><i class="fa-solid fa-trash"></i></button>
+                                                    </div>
+                                                    <div class="p-4 space-y-6">
+                                                        <!-- Observação -->
+                                                        <div>
+                                                            <h5 class="font-semibold text-sm text-gray-800 mb-2">Observação da Atividade</h5>
+                                                            <p class="text-sm text-gray-600 bg-gray-50 p-3 rounded-md border" x-text="atividade.observacao || 'Nenhuma observação fornecida.'"></p>
+                                                        </div>
+
+                                                        <!-- Anexos da Atividade -->
+                                                        <div>
+                                                            <h5 class="font-semibold text-sm text-gray-800 mb-2">Anexos da Atividade</h5>
+                                                            <!-- AQUI FICARÁ A LISTA DE ARQUIVOS ANEXADOS -->
+                                                            <div class="text-sm text-gray-500 italic">Nenhum anexo adicionado.</div>
+                                                        </div>
+
+                                                        <!-- Despesas -->
+                                                        <div>
+                                                            <h5 class="font-semibold text-sm text-gray-800 mb-2">Despesas da Atividade</h5>
+                                                            <!-- Formulário de Despesa -->
+                                                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-start mb-4">
+                                                                <div class="md:col-span-1">
+                                                                    <label class="block text-xs font-medium text-gray-600 mb-1">Tipo Despesa</label>
+                                                                    <select x-model="atividade.novaDespesa.tipo" class="w-full px-3 py-2 bg-white border-gray-300 rounded-md text-sm">
+                                                                        <option>Hospedagem</option><option>Alimentação</option><option>Transporte</option><option>Outros</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="md:col-span-1">
+                                                                    <label :for="'val-' + atividade.id" class="block text-xs font-medium text-gray-600 mb-1">Valor</label>
+                                                                    <input :id="'val-' + atividade.id" type="text" placeholder="R$ 0,00" class="w-full px-3 py-2 bg-white border-gray-300 rounded-md text-sm">
+                                                                </div>
+                                                                <div class="md:col-span-2">
+                                                                    <label class="block text-xs font-medium text-gray-600 mb-1">Comprovante</label>
+                                                                    <input type="file" class="block w-full text-sm text-gray-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+                                                                </div>
+                                                                <div class="md:col-span-4">
+                                                                    <label class="block text-xs font-medium text-gray-600 mb-1">Observação (Opcional)</label>
+                                                                    <textarea x-model="atividade.novaDespesa.observacao" rows="3" class="w-full px-3 py-2 bg-white border-gray-300 rounded-md text-sm" placeholder="Detalhes sobre a despesa..."></textarea>
+                                                                </div>
+                                                                <div class="md:col-span-4">
+                                                                    <button @click="adicionarDespesa(roteiroIndex, atividadeIndex)" class="w-full px-4 py-2 bg-green-500 text-white rounded-md text-sm font-semibold hover:bg-green-600 flex items-center justify-center gap-1">
+                                                                        <i class="fa-solid fa-plus text-xs"></i> Lançar Despesa
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <!-- Tabela de Despesas -->
+                                                            <template x-if="atividade.despesas.length > 0">
+                                                                <table class="min-w-full bg-white text-sm mt-2">
+                                                                    <thead class="bg-gray-50">
+                                                                        <tr>
+                                                                            <th class="px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase">Tipo</th>
+                                                                            <th class="px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase">Valor</th>
+                                                                            <th class="px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase">Observação</th>
+                                                                            <th class="px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase">Comprovante</th>
+                                                                            <th class="px-3 py-2 text-center text-xs font-bold text-gray-500 uppercase">Ação</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody class="divide-y divide-gray-200">
+                                                                        <template x-for="(despesa, despesaIndex) in atividade.despesas" :key="despesaIndex">
+                                                                            <tr>
+                                                                                <td class="px-3 py-2" x-text="despesa.tipo"></td>
+                                                                                <td class="px-3 py-2 font-medium" x-text="despesa.valor"></td>
+                                                                                <td class="px-3 py-2 text-gray-600 italic" x-text="despesa.observacao"></td>
+                                                                                <td class="px-3 py-2"><a href="#" class="text-blue-600 hover:underline">ver_anexo.pdf</a></td>
+                                                                                <td class="px-3 py-2 text-center">
+                                                                                    <button @click="removerDespesa(roteiroIndex, atividadeIndex, despesaIndex)" class="text-red-500 hover:text-red-700 text-xs"><i class="fa-solid fa-times"></i></button>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </template>
+                                                                    </tbody>
+                                                                </table>
+                                                            </template>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="https://unpkg.com/imask"></script>
+    <script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('prestacaoDeContas', () => ({
+            roteiro: [],
+            destinations: [], // Cidades da solicitação original
+            nextAtividadeId: 1,
+            masks: {},
+
+            init() {
+                // Simula o carregamento dos dados da solicitação e do roteiro
+                this.destinations = ['GO/Rio Verde', 'MG/Capinópolis', 'MG/Uberlândia']; // Dados da solicitação original
+                this.roteiro = [
+                    { 
+                        id: 1, 
+                        cliente: 'AgroSoja Comércio Agrícola', 
+                        location: 'GO/Rio Verde', 
+                        startDate: '06/10/2025', 
+                        endDate: '07/10/2025',
+                        isExpanded: true,
+                        atividades: [],
+                        novaAtividade: { data: '', tipo: 'NEGOCIAÇÃO/PROSPECÇÃO', observacao: '' }
+                    },
+                    { 
+                        id: 2, 
+                        cliente: 'Cooperativa Agropecuária Vale do Paranaíba', 
+                        location: 'MG/Capinópolis', 
+                        startDate: '08/10/2025', 
+                        endDate: '08/10/2025',
+                        isExpanded: true,
+                        atividades: [],
+                        novaAtividade: { data: '', tipo: 'NEGOCIAÇÃO/PROSPECÇÃO', observacao: '' }
+                    }
+                ];
+            },
+
+            isPlanned(destination) {
+                // Verifica se o destino da solicitação original está presente no roteiro planejado
+                return this.roteiro.some(item => item.location === destination);
+            },
+
+            adicionarAtividade(roteiroIndex) {
+                const item = this.roteiro[roteiroIndex];
+                if (!item.novaAtividade.data || !item.novaAtividade.tipo) {
+                    alert('Preencha a data e o tipo da atividade.');
+                    return;
+                }
+                const novaAtividade = {
+                    id: this.nextAtividadeId++,
+                    data: item.novaAtividade.data,
+                    tipo: item.novaAtividade.tipo,
+                    observacao: item.novaAtividade.observacao,
+                    despesas: [],
+                    novaDespesa: { tipo: 'Alimentação', valor: '', observacao: '' }
+                };
+                item.atividades.push(novaAtividade);
+                item.novaAtividade.data = '';
+                item.novaAtividade.observacao = '';
+
+                this.$nextTick(() => {
+                    const el = document.getElementById(`val-${novaAtividade.id}`);
+                    if (el) {
+                        this.masks[novaAtividade.id] = IMask(el, {
+                            mask: 'R$ num', lazy: false,
+                            blocks: { num: { mask: Number, scale: 2, thousandsSeparator: '.', padFractionalZeros: true, radix: ',' } }
+                        });
+                    }
+                });
+            },
+
+            removerAtividade(roteiroIndex, atividadeIndex) {
+                const atividadeId = this.roteiro[roteiroIndex].atividades[atividadeIndex].id;
+                if (this.masks[atividadeId]) {
+                    this.masks[atividadeId].destroy();
+                    delete this.masks[atividadeId];
+                }
+                this.roteiro[roteiroIndex].atividades.splice(atividadeIndex, 1);
+            },
+
+            adicionarDespesa(roteiroIndex, atividadeIndex) {
+                const atividade = this.roteiro[roteiroIndex].atividades[atividadeIndex];
+                const mask = this.masks[atividade.id];
+                const valor = mask ? mask.value : 'R$ 0,00';
+
+                if (!valor || mask.unmaskedValue === '0') {
+                    alert('Preencha o valor da despesa.');
+                    return;
+                }
+
+                atividade.despesas.push({
+                    tipo: atividade.novaDespesa.tipo,
+                    valor: valor,
+                    observacao: atividade.novaDespesa.observacao
+                });
+
+                atividade.novaDespesa.tipo = 'Alimentação';
+                atividade.novaDespesa.observacao = '';
+                if (mask) mask.value = '';
+            },
+
+            removerDespesa(roteiroIndex, atividadeIndex, despesaIndex) {
+                this.roteiro[roteiroIndex].atividades[atividadeIndex].despesas.splice(despesaIndex, 1);
+            },
+
+            formatarData(dataString) {
+                if (!dataString) return '';
+                const [year, month, day] = dataString.split('-');
+                return `${day}/${month}/${year}`;
+            }
+        }));
+    });
+    </script>
+</body>
+</html>

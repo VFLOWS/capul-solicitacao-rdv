@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html class="" x-data="{ sidebarOpen: true }" :class="{ 'sidebar-collapsed': !sidebarOpen }">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAC - Execução de Ação</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        * { 
+            font-family: 'Inter', sans-serif;
+            box-sizing: border-box;
+        }
+        
+        [x-cloak] { display: none !important; }
+
+        #sidebar {
+            width: 16rem;
+            transition: width 0.3s ease;
+        }
+        #main-content-wrapper {
+            margin-left: 16rem;
+            transition: margin-left 0.3s ease;
+            width: calc(100% - 16rem);
+        }
+        .sidebar-collapsed #sidebar {
+            width: 4rem;
+        }
+        .sidebar-collapsed #main-content-wrapper {
+            margin-left: 4rem;
+            width: calc(100% - 4rem);
+        }
+        .sidebar-text {
+            transition: opacity 0.2s ease, width 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .sidebar-collapsed .sidebar-text {
+            opacity: 0;
+            width: 0;
+        }
+        #sidebar-toggle {
+            transition: transform 0.2s ease;
+        }
+        .sidebar-collapsed #sidebar-toggle {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="app-container" class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="bg-white border-r border-gray-200 flex flex-col fixed h-full z-40">
+            <div class="h-16 flex items-center px-4 border-b border-gray-200 relative">
+                <div class="flex items-center gap-3 w-full">
+                    <div class="w-8 h-8 bg-neutral-600 flex items-center justify-center rounded-md flex-shrink-0">
+                        <i class="fa-solid fa-seedling text-white"></i>
+                    </div>
+                    <span class="text-lg text-neutral-800 sidebar-text">Capul</span>
+                </div>
+                <button id="sidebar-toggle" @click="sidebarOpen = !sidebarOpen" class="absolute right-[-12px] top-5 bg-white border border-gray-200 rounded-full w-6 h-6 flex items-center justify-center cursor-pointer z-50 shadow-sm">
+                    <i class="fas fa-chevron-left text-xs"></i>
+                </button>
+            </div>
+            <nav class="flex-1 px-4 py-4">
+                <ul class="space-y-1">
+                    <li><a href="#" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-neutral-600 hover:bg-gray-100"><i class="fa-solid fa-file-invoice w-5 text-center"></i><span class="sidebar-text">Cadastro e Análise</span></a></li>
+                    <li><a href="#" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-neutral-600 hover:bg-gray-100"><i class="fa-solid fa-cash-register w-5 text-center"></i><span class="sidebar-text">Fechamento de Caixa</span></a></li>
+                    <li><a href="../RDV/viagem_overview.html" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-neutral-600 hover:bg-gray-100"><i class="fa-solid fa-plane-departure w-5 text-center"></i><span class="sidebar-text">Solicitação de Viagem</span></a></li>
+                    <li><a href="./sac_overview_new.html" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md bg-neutral-900 text-white"><i class="fa-solid fa-headset w-5 text-center"></i><span class="sidebar-text">SAC</span></a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div id="main-content-wrapper" class="flex-1 flex flex-col">
+            <!-- Header -->
+            <header id="header" class="h-16 bg-white border-b border-gray-200 flex-shrink-0 sticky top-0 z-30">
+                <div class="flex items-center justify-between h-full px-6">
+                    <h1 class="text-xl text-neutral-800">Execução de Ação - SAC</h1>
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-2 text-sm text-neutral-600"><i class="fa-solid fa-user"></i><span>Carlos Pereira</span></div>
+                        <div class="h-5 w-px bg-gray-200"></div>
+                        <button class="flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Sair</span></button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="flex-1 p-6">
+                <div class="flex gap-6">
+                    <!-- History Column -->
+                    <div class="w-72 flex-shrink-0">
+                        <div class="bg-white rounded-lg border p-4 sticky top-20">
+                            <h3 class="font-medium mb-4">Histórico da Solicitação</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center"><i class="fas fa-check text-green-600 text-xs"></i></div>
+                                    <div><p class="text-sm font-medium">Solicitação Recebida</p><p class="text-xs text-gray-500">24/08/2025 14:30</p></div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center"><i class="fas fa-check text-green-600 text-xs"></i></div>
+                                    <div><p class="text-sm font-medium">Procedência Analisada</p><p class="text-xs text-gray-500">25/08/2025 10:00</p></div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center"><i class="fas fa-check text-green-600 text-xs"></i></div>
+                                    <div><p class="text-sm font-medium">Ações Definidas</p><p class="text-xs text-gray-500">25/08/2025 11:30</p></div>
+                                </div>
+
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center">
+                                        <i class="fas fa-spinner text-white text-xs animate-spin"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium">Execução da Ação</p>
+                                        <p class="text-xs text-gray-500">Em andamento</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main form area -->
+                    <div class="flex-1">
+                        <!-- Page Header -->
+                        <div class="mb-6 pb-4 border-b border-gray-200 flex justify-between items-center">
+                            <div>
+                                <div class="flex items-center gap-4">
+                                    <h2 class="text-2xl font-semibold text-gray-900">Executar Ação Corretiva</h2>
+                                    <span class="bg-[#007432] text-white text-sm font-bold px-4 py-1 rounded-md shadow-sm">INTERNO</span>
+                                </div>
+                                <p class="mt-1 text-sm text-gray-500">Registre a conclusão da ação sob sua responsabilidade.</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <a href="sac_overview_new.html" class="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100">Cancelar</a>
+                                <button id="completeExecutionBtn" class="bg-green-600 text-white px-4 py-2 rounded-md text-sm hover:bg-green-700 flex items-center gap-2">
+                                    <i class="fa-solid fa-check-circle"></i>
+                                    Concluir Execução
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-8">
+                            <!-- Action Item Details -->
+                            <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+                                <h3 class="bg-gray-50 text-lg font-medium p-4 border-b border-gray-200">Detalhes da Ação</h3>
+                                <div class="p-6">
+                                    <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                        <div><dt class="text-sm font-medium text-gray-500">Nº da Solicitação SAC</dt><dd class="mt-1 text-sm text-gray-900 font-semibold">#SAC-2023-001</dd></div>
+                                        <div><dt class="text-sm font-medium text-gray-500">Tipo de Ação</dt><dd class="mt-1 text-sm text-gray-900">Correção</dd></div>
+                                        <div><dt class="text-sm font-medium text-gray-500">Setor Responsável</dt><dd class="mt-1 text-sm text-gray-900">Técnica</dd></div>
+                                        <div><dt class="text-sm font-medium text-gray-500">Responsável</dt><dd class="mt-1 text-sm text-gray-900">Carlos Pereira</dd></div>
+                                        <div><dt class="text-sm font-medium text-gray-500">Prazo para Conclusão</dt><dd class="mt-1 text-sm text-gray-900 text-red-600 font-medium">15/09/2025</dd></div>
+                                        <div class="md:col-span-2"><dt class="text-sm font-medium text-gray-500">Descrição da Ação</dt><dd class="mt-1 text-sm text-gray-900">Entrar em contato com o cliente para agendar uma visita técnica e realizar a troca do equipamento de irrigação defeituoso.</dd></div>
+                                    </dl>
+                                </div>
+                            </div>
+
+                            <!-- Execution Form -->
+                            <div class="bg-white border border-green-500 rounded-lg shadow-sm" x-data="executionForm()">
+                                <h3 class="bg-green-600 text-white text-lg font-medium p-4">Registro da Execução</h3>
+                                <div class="p-6 space-y-6">
+                                    <!-- Execution Description -->
+                                    <div>
+                                        <label for="execution-description" class="block text-sm font-medium text-gray-700">Descrição da Execução <span class="text-red-500">*</span></label>
+                                        <textarea id="execution-description" name="execution-description" rows="4" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm" placeholder="Descreva em detalhes como a ação foi executada, incluindo datas, pessoas envolvidas e resultados alcançados."></textarea>
+                                    </div>
+
+                                    <!-- Attachments -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Evidências da Execução</label>
+                                        <div @dragover.prevent="isDragging = true" @dragleave.prevent="isDragging = false" @drop.prevent="handleDrop($event)" @click="$refs.fileInput.click()" :class="{ 'border-green-500 bg-green-50': isDragging }" class="mt-1 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-50 transition-colors">
+                                            <input id="file-upload" type="file" class="hidden" multiple @change="handleFileSelect($event)" x-ref="fileInput">
+                                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                            <p class="text-sm text-gray-600"><span class="font-medium text-green-600">Clique para fazer upload</span> ou arraste os arquivos</p>
+                                            <p class="text-xs text-gray-500">PDF, JPG, PNG, etc. (máx. 10MB cada)</p>
+                                        </div>
+                                        
+                                        <!-- File List -->
+                                        <div class="mt-4" x-show="files.length > 0">
+                                            <h4 class="text-sm font-medium text-gray-700 mb-2">Arquivos anexados</h4>
+                                            <div class="space-y-2">
+                                                <template x-for="(file, index) in files" :key="index">
+                                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-md border border-gray-200">
+                                                        <div class="flex items-center space-x-3 min-w-0">
+                                                            <i class="fas fa-file-alt text-gray-400"></i>
+                                                            <p class="text-sm font-medium text-gray-900 truncate" x-text="file.name"></p>
+                                                        </div>
+                                                        <div class="flex items-center space-x-3">
+                                                            <p class="text-xs text-gray-500" x-text="file.size"></p>
+                                                            <button @click.stop="removeFile(index)" class="text-gray-400 hover:text-red-600" title="Remover arquivo"><i class="fas fa-times"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Collapsible SAC Details -->
+                            <div class="bg-white border border-gray-200 rounded-lg shadow-sm" x-data="{ isOpen: false }">
+                                <button @click="isOpen = !isOpen" class="w-full flex justify-between items-center text-left p-4 border-b border-gray-200 focus:outline-none">
+                                    <h3 class="text-lg font-medium">Detalhes da Solicitação SAC</h3>
+                                    <i class="fas transition-transform duration-200" :class="{'fa-chevron-up': isOpen, 'fa-chevron-down': !isOpen}"></i>
+                                </button>
+                                <div x-show="isOpen" x-collapse class="p-6 space-y-8">
+                                    <!-- Detalhes da Solicitação -->
+                                    <div>
+                                        <h4 class="text-md font-semibold text-gray-800 mb-3 border-b pb-2">Dados da Solicitação</h4>
+                                        <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                            <div><dt class="text-sm font-medium text-gray-500">Solicitante</dt><dd class="mt-1 text-sm text-gray-900">João da Silva</dd></div>
+                                            <div><dt class="text-sm font-medium text-gray-500">Data Abertura</dt><dd class="mt-1 text-sm text-gray-900">24/08/2025</dd></div>
+                                            <div><dt class="text-sm font-medium text-gray-500">Nome Cliente</dt><dd class="mt-1 text-sm text-gray-900">João da Silva</dd></div>
+                                            <div><dt class="text-sm font-medium text-gray-500">Matrícula</dt><dd class="mt-1 text-sm text-gray-900">MAT123456</dd></div>
+                                            <div><dt class="text-sm font-medium text-gray-500">CPF/CNPJ</dt><dd class="mt-1 text-sm text-gray-900">123.456.789-00</dd></div>
+                                            <div><dt class="text-sm font-medium text-gray-500">Telefone</dt><dd class="mt-1 text-sm text-gray-900">(11) 98765-4321</dd></div>
+                                            <div><dt class="text-sm font-medium text-gray-500">E-mail</dt><dd class="mt-1 text-sm text-gray-900">joao.silva@exemplo.com</dd></div>
+                                            <div><dt class="text-sm font-medium text-gray-500">Tipo Cliente</dt><dd class="mt-1 text-sm text-gray-900">Associado</dd></div>
+                                            <div class="md:col-span-2"><dt class="text-sm font-medium text-gray-500">Endereço</dt><dd class="mt-1 text-sm text-gray-900">Rua das Flores, 123 - São Paulo - SP</dd></div>
+                                            <div class="md:col-span-2"><dt class="text-sm font-medium text-gray-500">Tipo da Solicitação</dt><dd class="mt-1 text-sm text-gray-900">Reclamação</dd></div>
+                                            <div class="md:col-span-2">
+                                                <dt class="text-sm font-medium text-gray-500">Descrição do Relato</dt>
+                                                <dd class="mt-1 text-sm text-gray-900 bg-gray-50 p-3 rounded-md border">Preciso de suporte técnico para o sistema de irrigação que adquirimos recentemente. O equipamento apresenta falhas intermitentes na programação dos horários de irrigação.</dd>
+                                            </div>
+                                            <div class="md:col-span-2">
+                                                <dt class="text-sm font-medium text-gray-500">Anexos Originais</dt>
+                                                <dd class="mt-2 space-y-2">
+                                                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded-md border">
+                                                        <div class="flex items-center space-x-3"><i class="fas fa-file-pdf text-red-500"></i><span class="text-sm text-gray-700">nota_fiscal.pdf</span></div>
+                                                        <a href="#" class="text-sm font-medium text-green-600 hover:text-green-700">Visualizar</a>
+                                                    </div>
+                                                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded-md border">
+                                                        <div class="flex items-center space-x-3"><i class="fas fa-image text-blue-500"></i><span class="text-sm text-gray-700">foto_defeito.jpg</span></div>
+                                                        <a href="#" class="text-sm font-medium text-green-600 hover:text-green-700">Visualizar</a>
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                        </dl>
+                                    </div>
+
+                                    <!-- Detalhes da Procedência -->
+                                    <div>
+                                        <h4 class="text-md font-semibold text-gray-800 mb-3 border-b pb-2">Análise de Procedência</h4>
+                                        <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                            <div><dt class="text-sm font-medium text-gray-500">Status da Procedência</dt><dd class="mt-1 text-sm text-gray-900"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Procedente</span></dd></div>
+                                            <div><dt class="text-sm font-medium text-gray-500">Responsável Análise</dt><dd class="mt-1 text-sm text-gray-900">Administrador Fluig</dd></div>
+                                            <div class="md:col-span-2"><dt class="text-sm font-medium text-gray-500">Parecer da Análise</dt><dd class="mt-1 text-sm text-gray-900 bg-gray-50 p-3 rounded-md border">A reclamação do cliente é válida. Foi constatado um defeito de fabricação no lote do produto adquirido.</dd></div>
+                                            <div class="md:col-span-2"><dt class="text-sm font-medium text-gray-500">Ações Imediatas</dt><dd class="mt-1 text-sm text-gray-900 bg-gray-50 p-3 rounded-md border">O cliente foi contatado e informado sobre a procedência. Uma visita para troca foi pré-agendada.</dd></div>
+                                            <div><dt class="text-sm font-medium text-gray-500">Custo da Análise</dt><dd class="mt-1 text-sm text-gray-900">R$ 150,00</dd></div>
+                                            <div class="md:col-span-2">
+                                                <dt class="text-sm font-medium text-gray-500">Evidências da Análise</dt>
+                                                <dd class="mt-2 space-y-2">
+                                                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded-md border">
+                                                        <div class="flex items-center space-x-3"><i class="fas fa-file-alt text-gray-500"></i><span class="text-sm text-gray-700">relatorio_tecnico_lote.pdf</span></div>
+                                                        <a href="#" class="text-sm font-medium text-green-600 hover:text-green-700">Visualizar</a>
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals for feedback -->
+    <div id="processingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center">
+            <div class="w-16 h-16 border-4 border-gray-200 border-t-green-600 rounded-full animate-spin mx-auto mb-4"></div>
+            <h3 class="text-xl font-medium text-gray-900 mb-2">Processando</h3>
+            <p class="text-gray-600">Aguarde enquanto registramos a execução...</p>
+        </div>
+    </div>
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-check text-green-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-medium text-gray-900 mb-2">Execução Concluída</h3>
+            <p class="text-gray-600 mb-6">A ação foi marcada como concluída com sucesso!</p>
+            <button id="closeModalBtn" class="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">Voltar para Minhas Tarefas</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('executionForm', () => ({
+                files: [],
+                isDragging: false,
+                handleFileSelect(event) {
+                    this.addFiles(event.target.files);
+                },
+                handleDrop(event) {
+                    this.isDragging = false;
+                    this.addFiles(event.dataTransfer.files);
+                },
+                addFiles(fileList) {
+                    Array.from(fileList).forEach(file => {
+                        this.files.push({
+                            name: file.name,
+                            size: this.formatFileSize(file.size),
+                            rawFile: file
+                        });
+                    });
+                },
+                removeFile(index) {
+                    this.files.splice(index, 1);
+                },
+                formatFileSize(bytes) {
+                    if (bytes === 0) return '0 Bytes';
+                    const k = 1024;
+                    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                }
+            }));
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const completeBtn = document.getElementById('completeExecutionBtn');
+            const processingModal = document.getElementById('processingModal');
+            const successModal = document.getElementById('successModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+
+            completeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const description = document.getElementById('execution-description').value;
+                if (!description.trim()) {
+                    alert('A descrição da execução é obrigatória.');
+                    return;
+                }
+
+                processingModal.classList.remove('hidden');
+                setTimeout(() => {
+                    processingModal.classList.add('hidden');
+                    successModal.classList.remove('hidden');
+                }, 1500);
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                window.location.href = 'sac_overview_new.html';
+            });
+        });
+    </script>
+</body>
+</html>

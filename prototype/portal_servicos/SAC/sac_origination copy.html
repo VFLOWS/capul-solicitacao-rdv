@@ -247,10 +247,7 @@
                         <!-- Cabeçalho da Página -->
                         <div class="mb-6 pb-4 border-b border-gray-200 flex justify-between items-center">
                             <div>
-                                <div class="flex items-center gap-4">
-                                    <h2 class="text-2xl font-semibold text-gray-900">Procedência</h2>
-                                    <span class="bg-[#007432] text-white text-sm font-bold px-4 py-1 rounded-md shadow-sm">INTERNO</span>
-                                </div>
+                                <h2 class="text-2xl font-semibold text-gray-900">Procedência</h2>
                                 <p class="mt-1 text-sm text-gray-500">Preencha os campos abaixo para prosseguir com a solicitação.</p>
                             </div>
                             <div class="flex items-center gap-2">
@@ -264,136 +261,171 @@
 
                         <div class="space-y-8">
                             <!-- Detalhes da Solicitação -->
-                            <div class="bg-white rounded-lg shadow border border-gray-300 overflow-hidden">
-                                <div class="bg-green-600 px-6 py-3">
-                                    <h3 class="text-lg font-medium text-white">Uso Interno - Análise</h3>
+                            <div class="bg-white rounded-lg shadow border border-[#007432] overflow-hidden">
+                                <div class="bg-[#007432] px-6 py-3">
+                                    <h3 class="text-lg font-medium text-white">Verificar Procedência</h3>
                                 </div>
-                                <div class="p-6" x-data="{ evidenceRows: [{ id: 1, code: '12345', description: '', file: null }], costRows: [{ id: 1, description: '', value: '' }] }">
-                                    
-                                    <!-- Fieldset: Análise -->
-                                    <fieldset class="border border-gray-300 p-6 rounded-md">
-                                        <legend class="text-base font-semibold text-gray-900 px-2">Análise</legend>
-                                        
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div class="md:col-span-2">
-                                                <label for="service-responsible" class="block text-sm font-medium text-gray-700">Responsável Atendimento</label>
-                                                <input type="text" name="service-responsible" id="service-responsible" value="Administrador Fluig" readonly class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md bg-gray-50">
-                                            </div>
-                                            <div class="md:col-span-2">
-                                                <label for="analysis" class="block text-sm font-medium text-gray-700">Análise <span class="text-red-500">*</span></label>
-                                                <textarea name="analysis" id="analysis" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800" rows="4" placeholder="Preencher campo abaixo os comentários da análise"></textarea>
-                                            </div>
+                                <div class="p-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label for="origin" class="block text-sm font-medium text-gray-700">Origem <span class="text-red-500">*</span></label>
+                                            <select id="origin" name="origin" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800">
+                                                <option>Selecione uma Origem</option>
+                                                <option>Site</option>
+                                                <option>Telefone</option>
+                                                <option>E-mail</option>
+                                                <option>Presencial</option>
+                                            </select>
                                         </div>
-
-                                        <!-- Evidências da Análise (Componente Padrão) -->
-                                        <div class="mt-8" x-data="fileUpload()">
-                                            <h3 class="text-lg font-medium text-gray-900 border-b pb-3 mb-4">Insira as Evidências da sua Análise</h3>
-                                            <div 
-                                                class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 transition-colors"
-                                                @dragover.prevent="isDragging = true"
-                                                @dragleave.prevent="isDragging = false"
-                                                @drop.prevent="handleFileDrop($event)"
-                                                @click="$refs.fileInput.click()"
-                                                :class="{ 'border-blue-500 bg-blue-50': isDragging }"
-                                            >
-                                                <input type="file" multiple class="hidden" x-ref="fileInput" @change="handleFileSelect($event)">
-                                                <div class="flex flex-col items-center justify-center space-y-2">
-                                                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400"></i>
-                                                    <p class="text-gray-700">Arraste e solte os arquivos aqui</p>
-                                                    <p class="text-sm text-gray-500">ou clique para selecionar</p>
-                                                </div>
-                                            </div>
-                                            <div class="mt-4 space-y-2" x-show="files.length > 0">
-                                                <template x-for="(file, index) in files" :key="index">
-                                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-md border">
-                                                        <div class="flex items-center space-x-3">
-                                                            <i class="fas fa-file-alt text-gray-500"></i>
-                                                            <span class="text-sm font-medium text-gray-800" x-text="file.name"></span>
-                                                            <span class="text-xs text-gray-500" x-text="formatBytes(file.size)"></span>
-                                                        </div>
-                                                        <button @click="removeFile(index)" class="text-red-500 hover:text-red-700">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </div>
-                                                </template>
-                                            </div>
+                                        <div>
+                                            <label for="request-type" class="block text-sm font-medium text-gray-700">Tipo Solicitação <span class="text-red-500">*</span></label>
+                                            <select id="request-type" name="request-type" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800">
+                                                <option>Selecione um Tipo de Solicitação</option>
+                                                <option>Dúvida</option>
+                                                <option>Solicitação</option>
+                                                <option>Reclamação</option>
+                                                <option>Sugestão</option>
+                                            </select>
                                         </div>
-                                    </fieldset>
-
-                                    <!-- Fieldset: Tomada de Decisão -->
-                                    <fieldset class="border border-gray-300 p-6 rounded-md mt-8">
-                                        <legend class="text-base font-semibold text-gray-900 px-2">Tomada de Decisão</legend>
-
-                                        <!-- Status e Ações -->
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div>
-                                                <label class="block text-sm font-medium text-gray-700">Status <span class="text-red-500">*</span></label>
-                                                <div class="mt-2 flex items-center space-x-6">
-                                                    <label class="flex items-center">
-                                                        <input type="radio" name="status" value="procedente" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" checked>
-                                                        <span class="ml-2 text-sm text-gray-700">Procedente</span>
-                                                    </label>
-                                                    <label class="flex items-center">
-                                                        <input type="radio" name="status" value="nao-procedente" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
-                                                        <span class="ml-2 text-sm text-gray-700">Não Procedente</span>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="md:col-span-2">
-                                                <label for="immediate-actions" class="block text-sm font-medium text-gray-700">Ações Imediatas</label>
-                                                <textarea name="immediate-actions" id="immediate-actions" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md" rows="4" placeholder="Descrever as ações tomadas de imediato para resolver a falha"></textarea>
-                                            </div>
-                                            <div>
-                                                <label for="closing-date" class="block text-sm font-medium text-gray-700">Data Fechamento</label>
-                                                <input type="date" name="closing-date" id="closing-date" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md">
-                                            </div>
-                                            <div>
-                                                <label for="client-response-date" class="block text-sm font-medium text-gray-700">Resposta ao Cliente em <span class="text-red-500">*</span></label>
-                                                <input type="date" name="client-response-date" id="client-response-date" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md">
-                                            </div>
-                                            <div class="md:col-span-2">
-                                                <label for="sac-number" class="block text-sm font-medium text-gray-700">Nº SAC</label>
-                                                <input type="text" name="sac-number" id="sac-number" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md">
-                                                <p class="mt-1 text-xs text-gray-500">(Abertura ações corretivas quando o departamento da qualidade julgar necessário)</p>
-                                            </div>
-                                        </div>
-
-                                        <!-- Custos -->
-                                        <div class="mt-8">
-                                            <div class="bg-green-600 px-6 py-3">
-                                                <h3 class="text-lg font-medium text-white">Custo</h3>
-                                            </div>
-                                            <div class="border border-t-0 border-gray-200 p-6">
-                                                <div class="space-y-4">
-                                                    <template x-for="(row, index) in costRows" :key="row.id">
-                                                        <div class="grid grid-cols-12 gap-4 items-center">
-                                                            <div class="col-span-8">
-                                                                <label class="block text-sm font-medium text-gray-700">Descrição</label>
-                                                                <input type="text" x-model="row.description" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md">
-                                                            </div>
-                                                            <div class="col-span-3">
-                                                                <label class="block text-sm font-medium text-gray-700">Valor</label>
-                                                                <input type="text" x-model="row.value" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md">
-                                                            </div>
-                                                            <div class="col-span-1 flex items-end h-full">
-                                                                <button @click="costRows.splice(index, 1)" class="text-red-500 hover:text-red-700 p-2" title="Remover Custo">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </template>
-                                                </div>
-                                                <button @click="costRows.push({ id: Date.now(), description: '', value: '' })" class="mt-4 bg-green-600 text-white px-4 py-2 rounded-md text-sm hover:bg-green-700">
-                                                    Adicionar Custo
+                                        <div>
+                                            <label for="responsible-group" class="block text-sm font-medium text-gray-700">Grupo Responsável <span class="text-red-500">*</span></label>
+                                            <div class="mt-1 flex rounded-md shadow-sm">
+                                                <input type="text" name="responsible-group" id="responsible-group" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800">
+                                                <button type="button" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                                                    <i class="fas fa-search text-gray-400"></i>
                                                 </button>
                                             </div>
                                         </div>
-                                    </fieldset>
+                                        <div>
+                                            <label for="issuer" class="block text-sm font-medium text-gray-700">Emissor <span class="text-red-500">*</span></label>
+                                            <input type="text" name="issuer" id="issuer" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800">
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label for="justification" class="block text-sm font-medium text-gray-700">Justificativa <span class="text-red-500">*</span></label>
+                                            <textarea name="justification" id="justification" class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-800" rows="4"></textarea>
+                                        </div>                                        
+                                    </div>
+
+                                    <!-- Anexos -->
+                                    <div class="bg-white p-6 rounded-lg shadow mt-6">
+                                        <h3 class="text-lg font-medium text-gray-900 border-b pb-3 mb-4">Anexos</h3>
+                                        <div class="space-y-4">
+                                            <!-- Seção de Anexos -->
+                                            <div id="attachments-section" class="mt-6" x-data="{
+                                                files: [],
+                                                isDragging: false,
+                                                handleDragOver(event) {
+                                                    event.preventDefault();
+                                                    this.isDragging = true;
+                                                },
+                                                handleDragLeave() {
+                                                    this.isDragging = false;
+                                                },
+                                                handleDrop(event) {
+                                                    event.preventDefault();
+                                                    this.isDragging = false;
+                                                    const droppedFiles = event.dataTransfer.files;
+                                                    this.handleFiles(droppedFiles);
+                                                },
+                                                handleFileSelect(event) {
+                                                    const selectedFiles = event.target.files;
+                                                    this.handleFiles(selectedFiles);
+                                                },
+                                                handleFiles(fileList) {
+                                                    for (let i = 0; i < fileList.length; i++) {
+                                                        const file = fileList[i];
+                                                        // Check file type (PDF, JPG, PNG, etc.)
+                                                        const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                                                        if (!validTypes.includes(file.type)) {
+                                                            alert(`Tipo de arquivo não suportado: ${file.name}. Por favor, envie apenas PDF, imagens ou documentos.`);
+                                                            continue;
+                                                        }
+                                                        
+                                                        // Check file size (max 5MB)
+                                                        const maxSize = 5 * 1024 * 1024; // 5MB
+                                                        if (file.size > maxSize) {
+                                                            alert(`Arquivo muito grande: ${file.name}. O tamanho máximo permitido é 5MB.`);
+                                                            continue;
+                                                        }
+                                                        
+                                                        // Add file to the list
+                                                        this.files.push({
+                                                            name: file.name,
+                                                            size: this.formatFileSize(file.size),
+                                                            type: file.type,
+                                                            file: file
+                                                        });
+                                                    }
+                                                    // Reset file input to allow selecting the same file again
+                                                    document.getElementById('file-upload').value = '';
+                                                },
+                                                formatFileSize(bytes) {
+                                                    if (bytes === 0) return '0 Bytes';
+                                                    const k = 1024;
+                                                    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                                                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                                                    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                                                },
+                                                removeFile(index) {
+                                                    this.files.splice(index, 1);
+                                                }
+                                            }">
+                                                <div 
+                                                    @dragover.prevent="handleDragOver"
+                                                    @dragleave.prevent="isDragging = false"
+                                                    @drop.prevent="handleDrop"
+                                                    @click="document.getElementById('file-upload').click()"
+                                                    :class="{ 'border-blue-500 bg-blue-50': isDragging }"
+                                                    class="border-2 border-dashed border-neutral-300 rounded-lg p-6 text-center cursor-pointer hover:bg-neutral-50 transition-colors"
+                                                >
+                                                    <i class="fas fa-cloud-upload-alt text-3xl text-neutral-400 mb-2"></i>
+                                                    <p class="text-sm text-neutral-600 mb-1">
+                                                        <span class="font-medium text-blue-600">Clique para fazer upload</span> ou arraste os arquivos
+                                                    </p>
+                                                    <p class="text-xs text-neutral-500">Formatos aceitos: PDF, JPG, PNG, DOC, DOCX (máx. 5MB cada)</p>
+                                                    <input 
+                                                        id="file-upload" 
+                                                        type="file" 
+                                                        class="hidden" 
+                                                        multiple 
+                                                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                                                        @change="handleFileSelect"
+                                                    >
+                                                </div>
+                                                
+                                                <!-- Lista de Arquivos Anexados -->
+                                                <div class="mt-4" x-show="files.length > 0">
+                                                    <h4 class="text-sm font-medium text-neutral-700 mb-2">Arquivos anexados</h4>
+                                                    <div class="space-y-2">
+                                                        <template x-for="(file, index) in files" :key="index">
+                                                            <div class="flex items-center justify-between p-3 bg-neutral-50 rounded-md border border-neutral-200">
+                                                                <div class="flex items-center space-x-3">
+                                                                    <i class="fas fa-file-alt text-neutral-400"></i>
+                                                                    <div class="min-w-0">
+                                                                        <p class="text-sm font-medium text-neutral-900 truncate" x-text="file.name"></p>
+                                                                        <p class="text-xs text-neutral-500" x-text="file.size"></p>
+                                                                    </div>
+                                                                </div>
+                                                                <button 
+                                                                    @click.stop="removeFile(index)" 
+                                                                    class="text-neutral-400 hover:text-neutral-600 focus:outline-none"
+                                                                    title="Remover arquivo"
+                                                                >
+                                                                    <i class="fas fa-times"></i>
+                                                                </button>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
 
                             <!-- Dados do Cliente/Reclamacao -->
-                            <div class="bg-white p-6 rounded-lg shadow" x-data="{ isOpen: false }">
+                            <div class="bg-white p-6 rounded-lg shadow" x-data="{ isOpen: true }">
                                 <button 
                                     @click="isOpen = !isOpen" 
                                     class="w-full flex justify-between items-center text-left mb-6 focus:outline-none"
@@ -544,36 +576,6 @@
 </style>
 
 <script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('fileUpload', () => ({
-            isDragging: false,
-            files: [],
-            handleFileSelect(event) {
-                this.addFiles(event.target.files);
-            },
-            handleFileDrop(event) {
-                this.isDragging = false;
-                this.addFiles(event.dataTransfer.files);
-            },
-            addFiles(fileList) {
-                for (let i = 0; i < fileList.length; i++) {
-                    this.files.push(fileList[i]);
-                }
-            },
-            removeFile(index) {
-                this.files.splice(index, 1);
-            },
-            formatBytes(bytes, decimals = 2) {
-                if (bytes === 0) return '0 Bytes';
-                const k = 1024;
-                const dm = decimals < 0 ? 0 : decimals;
-                const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-                const i = Math.floor(Math.log(bytes) / Math.log(k));
-                return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-            }
-        }));
-    });
-
     document.addEventListener('DOMContentLoaded', function() {
         const submitBtn = document.getElementById('submitRequestBtn');
         const processingModal = document.getElementById('processingModal');

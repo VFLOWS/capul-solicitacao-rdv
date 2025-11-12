@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html class="" x-data="{ sidebarOpen: true }" :class="{ 'sidebar-collapsed': !sidebarOpen }">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprovação de Prestação de Contas - Viagens</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest' }; </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
+        ::-webkit-scrollbar { display: none; }
+        body { min-height: 100vh; display: flex; flex-direction: column; }
+        #app-container { display: flex; min-height: 100vh; position: relative; }
+        #sidebar { width: 16rem; height: 100vh; position: fixed; top: 0; left: 0; z-index: 40; display: flex; flex-direction: column; background-color: #f9fafb; border-right: 1px solid #e5e7eb; transition: width 0.3s ease; }
+        #main-content-wrapper { flex: 1; margin-left: 16rem; min-height: 100vh; display: flex; flex-direction: column; transition: margin-left 0.3s ease; width: calc(100% - 16rem); }
+        #header { width: 100%; position: sticky; top: 0; z-index: 30; background-color: white; border-bottom: 1px solid #e5e7eb; }
+        .sidebar-collapsed #sidebar { width: 4rem; }
+        .sidebar-collapsed #main-content-wrapper { margin-left: 4rem; width: calc(100% - 4rem); }
+        .sidebar-text, .sidebar-logo-text { transition: opacity 0.2s ease, width 0.2s ease; white-space: nowrap; overflow: hidden; }
+        .sidebar-collapsed .sidebar-text, .sidebar-collapsed .sidebar-logo-text { opacity: 0; width: 0; display: inline-block; }
+        #sidebar-toggle { position: absolute; right: -12px; top: 1rem; background: white; border: 1px solid #e5e7eb; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: transform 0.2s ease; }
+        #sidebar-toggle:hover { background: #f3f4f6; }
+        .sidebar-collapsed #sidebar-toggle { transform: rotate(180deg); }
+    </style>
+</head>
+<body class="h-full text-base-content bg-neutral-50" x-data="{ showModal: false, modalType: '', comment: '' }">
+    <!-- Modal Genérico para Ações -->
+    <div x-show="showModal" @keydown.escape.window="showModal = false" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60" style="display: none;">
+        <div @click.away="showModal = false" class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+            <h3 class="text-lg font-semibold text-gray-900" x-text="
+                modalType === 'approve' ? 'Aprovar Prestação de Contas' :
+                modalType === 'reject' ? 'Reprovar Prestação de Contas' : 'Solicitar Alterações'">
+            </h3>
+            <p class="text-sm text-gray-600 mt-1">
+                <span x-show="modalType !== 'approve'">Por favor, forneça uma justificativa.</span>
+                <span x-show="modalType === 'approve'">Você pode adicionar uma observação opcional.</span>
+            </p>
+            <div class="mt-4">
+                <label for="approval_comment" class="text-sm font-medium text-gray-700">
+                    Observação <span x-show="modalType !== 'approve'" class="text-red-500">*</span>
+                </label>
+                <textarea id="approval_comment" x-model="comment" rows="3" class="mt-1 w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    :placeholder="modalType === 'reject' ? 'Motivo da reprovação...' : 'Justificativa para as alterações...'"></textarea>
+            </div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button @click="showModal = false" class="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100">Cancelar</button>
+                <button 
+                    @click="showModal = false; alert('Ação registrada com comentário: ' + comment)"
+                    class="px-4 py-2 text-sm rounded-md text-white"
+                    :class="{
+                        'bg-green-600 hover:bg-green-700': modalType === 'approve',
+                        'bg-red-600 hover:bg-red-700': modalType === 'reject',
+                        'bg-yellow-500 hover:bg-yellow-600': modalType === 'changes'
+                    }"
+                    :disabled="modalType !== 'approve' && !comment.trim()">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-container" class="bg-transparent text-neutral-900 flex min-h-[1200px] w-full">
+        <!-- Sidebar -->
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="flex flex-col">
+            <div id="sidebar-header" class="h-16 flex items-center px-4 border-b border-neutral-200 relative">
+                <div class="flex items-center gap-3 w-full">
+                    <div class="w-8 h-8 bg-neutral-600 flex items-center justify-center rounded-md flex-shrink-0">
+                        <i class="fa-solid fa-seedling text-white"></i>
+                    </div>
+                    <span class="text-lg text-neutral-800 sidebar-logo-text">Capul</span>
+                </div>
+                <button id="sidebar-toggle" @click="sidebarOpen = !sidebarOpen" aria-label="Alternar menu" class="sidebar-toggle-icon">
+                    <i class="fas fa-chevron-left text-xs"></i>
+                </button>
+            </div>
+            <nav id="sidebar-nav" class="flex-1 px-4 py-4">
+                <ul class="space-y-1">
+                    <li>
+                        <span class="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 cursor-pointer">
+                            <i class="fa-solid fa-file-invoice w-5 text-center"></i>
+                            <span class="sidebar-text">Cadastro e Análise</span>
+                        </span>
+                    </li>
+                    <li>
+                        <span class="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 cursor-pointer">
+                            <i class="fa-solid fa-cash-register w-5 text-center"></i>
+                            <span class="sidebar-text">Fechamento de Caixa</span>
+                        </span>
+                    </li>
+                    <li>
+                        <a href="viagem_overview.html" class="flex items-center gap-3 px-3 py-2 text-sm rounded-md bg-neutral-100 text-neutral-900">
+                            <i class="fa-solid fa-plane-departure w-5 text-center"></i>
+                            <span class="sidebar-text">Solicitação de Viagem</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+
+        <div id="main-content-wrapper">
+            <header id="header" class="h-16 bg-white border-b border-neutral-200 flex-shrink-0">
+                <div class="flex items-center justify-between h-full px-6">
+                    <div id="page-title"><h1 class="text-xl text-neutral-800">Aprovar Prestação de Contas: #00451</h1></div>
+                    <div id="user-menu" class="flex items-center gap-4"><div class="flex items-center gap-2 text-sm text-neutral-600"><i class="fa-solid fa-user"></i><span>Maria Helena Souza</span></div><div class="h-5 w-px bg-neutral-200"></div><span class="flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 cursor-pointer"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Sair</span></span></div>
+                </div>
+            </header>
+
+            <main id="main-content" class="flex-1 p-6">
+                <div class="flex gap-6" x-data="pageData()">
+                    <!-- Sidebar de Status da Aprovação -->
+                    <div class="w-72 flex-shrink-0">
+                        <div class="bg-white rounded-lg border border-neutral-200 p-4 sticky top-24">
+                            <h3 class="font-medium mb-4 text-neutral-800">Status da Aprovação</h3>
+                            
+                            <!-- Status Steps -->
+                            <div class="space-y-4 mb-6">
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                                        <i class="fas fa-check text-green-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium">Solicitação Enviada</p>
+                                        <p class="text-xs text-gray-500">01/08/2025 14:30</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                                        <i class="fas fa-check text-green-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium">Superior Imediato - Aprovado</p>
+                                        <p class="text-xs text-gray-500">02/08/2025 09:15</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                                        <i class="fas fa-check text-green-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium">Comercial - Aprovado</p>
+                                        <p class="text-xs text-gray-500">02/08/2025 12:15</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                                        <i class="fas fa-check text-green-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium">Financeiro - Aprovado</p>
+                                        <p class="text-xs text-gray-500">02/08/2025 14:15</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                                        <i class="fas fa-check text-green-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium">Liberação de Adiantamento</p>
+                                        <p class="text-xs text-gray-500">02/08/2025 16:15</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-green-100 flex items-center justify-center">
+                                        <i class="fas fa-check text-green-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium">Prestação de Contas</p>
+                                        <p class="text-xs text-gray-500">05/08/2025 12:15</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-1 w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center">
+                                        <i class="fas fa-spinner text-white text-xs animate-spin"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium">Superior Imediato - Em Aprovação</p>
+                                        <p class="text-xs text-gray-500">Em andamento</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Ações de Aprovação -->
+                            <div class="space-y-2 border-t pt-4">
+                                <button @click="modalType = 'approve'; showModal = true" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md flex items-center justify-center gap-2 text-sm">
+                                    <i class="fas fa-check"></i> Aprovar
+                                </button>
+                                <button @click="modalType = 'reject'; showModal = true" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md flex items-center justify-center gap-2 text-sm">
+                                    <i class="fas fa-times"></i> Reprovar
+                                </button>
+                                <button @click="modalType = 'changes'; showModal = true" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-md flex items-center justify-center gap-2 text-sm">
+                                    <i class="fas fa-edit"></i> Solicitar Alterações
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conteúdo Principal da Prestação -->
+                    <div class="flex-1">
+                        <div class="bg-white border border-neutral-200 rounded-lg p-6">
+                            <!-- Cabeçalho -->
+                            <div class="flex justify-between items-center pb-4 border-b border-neutral-200">
+                                <div>
+                                    <h2 class="text-lg font-semibold text-neutral-900">Detalhes da Prestação de Contas</h2>
+                                    <p class="text-sm text-neutral-500">Solicitante: Joaquim Rodrigo Moreira</p>
+                                </div>
+                            </div>
+
+                            <!-- Conteúdo da Prestação -->
+                            <div class="py-6 space-y-8">
+                                <!-- Resumo Financeiro -->
+                                <div id="financial-summary" class="p-4 border border-blue-200 rounded-lg bg-blue-50">
+                                    <h3 class="text-base font-semibold text-neutral-800 mb-3">Resumo Financeiro</h3>
+                                    <div class="grid grid-cols-3 gap-4 text-sm">
+                                        <div>
+                                            <p class="font-medium text-neutral-600 block">Valor Adiantado:</p>
+                                            <p class="text-neutral-800 font-semibold text-lg" x-text="formatCurrency(valorAdiantado)"></p>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-neutral-600 block">Total Despesas:</p>
+                                            <p class="text-neutral-800 font-semibold text-lg" x-text="formatCurrency(totalDespesas)"></p>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-neutral-600 block">Saldo Final:</p>
+                                            <p class="font-semibold text-lg" 
+                                               :class="{ 'text-red-600': saldo < 0, 'text-green-600': saldo >= 0 }">
+                                               <span x-text="formatCurrency(Math.abs(saldo))"></span>
+                                               <span class="text-xs" x-text="saldo < 0 ? '(a devolver)' : '(a reembolsar)'"></span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Resumo da Viagem -->
+                                <div id="rdv-summary" class="p-4 border border-neutral-200 rounded-lg bg-neutral-50">
+                                    <h3 class="text-base font-semibold text-neutral-800 mb-3">Resumo da Viagem Original</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-sm">
+                                        <div>
+                                            <p class="font-medium text-neutral-600 block mb-1">Período:</p>
+                                            <p class="text-neutral-800">06/10/2025 a 10/10/2025</p>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-neutral-600 block mb-1">Destinos:</p>
+                                            <div class="flex flex-wrap gap-2">
+                                                <template x-for="destino in destinosOriginais" :key="destino">
+                                                    <span class="px-2 py-1 text-xs bg-neutral-200 text-neutral-700 rounded-md" x-text="destino"></span>
+                                                </template>
+                                            </div>
+                                        </div>
+                                        <div class="col-span-2">
+                                            <p class="font-medium text-neutral-600 block mb-1">Justificativa:</p>
+                                            <p class="text-neutral-800">Visita técnica a clientes e prospecção de novos negócios na região do Triângulo Mineiro.</p>
+                                        </div>
+                                        <div class="col-span-2">
+                                            <p class="font-medium text-neutral-600 block mb-1">Anexos da Solicitação:</p>
+                                            <div class="space-y-2">
+                                                <template x-for="anexo in anexosOriginais" :key="anexo.name">
+                                                    <a :href="anexo.url" target="_blank" class="flex items-center gap-2 text-blue-600 hover:underline">
+                                                        <i class="fa-solid fa-paperclip text-xs"></i>
+                                                        <span x-text="anexo.name"></span>
+                                                    </a>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Roteiro e Despesas -->
+                                <div class="space-y-6">
+                                    <h2 class="text-xl font-semibold text-neutral-800">Roteiro Realizado e Despesas</h2>
+                                    <!-- Item do Roteiro -->
+                                    <template x-for="(itemRoteiro, roteiroIndex) in roteiro" :key="roteiroIndex">
+                                        <div class="bg-white border border-gray-200 rounded-lg shadow-md">
+                                            <div class="p-4 bg-gray-100 border-b border-gray-200">
+                                                <p class="font-bold text-lg text-gray-800" x-text="`Visita: ${itemRoteiro.cliente}`"></p>
+                                                <p class="text-sm text-gray-600" x-text="`${itemRoteiro.location} | Planejado: ${itemRoteiro.startDate} a ${itemRoteiro.endDate}`"></p>
+                                            </div>
+                                            <div class="p-6 space-y-4">
+                                                <!-- Atividade -->
+                                                <template x-for="(atividade, atividadeIndex) in itemRoteiro.atividades" :key="atividadeIndex">
+                                                    <div class="bg-gray-50 border border-gray-200 rounded-lg">
+                                                        <div class="bg-gray-200 p-3 rounded-t-md border-b border-gray-300"><p class="font-semibold text-sm text-gray-700" x-text="`Atividade de ${atividade.data} - ${atividade.tipo}`"></p></div>
+                                                        <div class="p-4 space-y-6">
+                                                            <div><h5 class="font-semibold text-sm text-gray-800 pb-2 mb-2 border-b">Observação</h5><p class="text-sm text-gray-700 bg-white p-3 rounded-md border" x-text="atividade.observacao"></p></div>
+                                                            <div><h5 class="font-semibold text-sm text-gray-800 pb-2 mb-2 border-b">Anexos</h5>
+                                                                <template x-if="atividade.anexos.length > 0">
+                                                                    <div class="flex items-center gap-3 p-2 bg-white border rounded-md"><i class="fa-solid fa-file-pdf text-red-500"></i><a href="#" class="text-sm text-blue-600 hover:underline" x-text="atividade.anexos[0]"></a></div>
+                                                                </template>
+                                                                <template x-if="atividade.anexos.length === 0">
+                                                                    <p class="text-sm text-gray-500 italic">Nenhum anexo fornecido.</p>
+                                                                </template>
+                                                            </div>
+                                                            <div>
+                                                                <h5 class="font-semibold text-sm text-gray-800 pb-2 mb-2 border-b">Despesas</h5>
+                                                                <table class="min-w-full bg-white text-sm mt-2 border rounded-md">
+                                                                    <thead class="bg-gray-100">
+                                                                        <tr>
+                                                                            <th class="px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase">Tipo</th>
+                                                                            <th class="px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase">Valor</th>
+                                                                            <th class="px-3 py-2 text-left text-xs font-bold text-gray-500 uppercase">Comprovante</th>
+                                                                            <th class="px-3 py-2 text-center text-xs font-bold text-gray-500 uppercase">Ações</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody class="divide-y divide-gray-200">
+                                                                        <template x-for="(despesa, despesaIndex) in atividade.despesas" :key="despesaIndex">
+                                                                            <tr :class="{
+                                                                                'bg-green-50': despesa.status === 'approved',
+                                                                                'bg-red-50': despesa.status === 'rejected'
+                                                                            }">
+                                                                                <td class="px-3 py-2" x-text="despesa.tipo"></td>
+                                                                                <td class="px-3 py-2 font-medium" x-text="formatCurrency(despesa.valor)"></td>
+                                                                                <td class="px-3 py-2"><a href="#" class="text-blue-600 hover:underline" x-text="despesa.anexo"></a></td>
+                                                                                <td class="px-3 py-2 text-center">
+                                                                                    <!-- Estado Padrão (Pendente) -->
+                                                                                    <template x-if="despesa.status === 'pending' && !despesa.isApproving && !despesa.isRejecting">
+                                                                                        <div class="flex justify-center gap-2">
+                                                                                            <button @click="despesa.isApproving = true" class="w-8 h-8 flex items-center justify-center text-green-600 bg-green-100 hover:bg-green-200 rounded-full" title="Aprovar Despesa"><i class="fas fa-check"></i></button>
+                                                                                            <button @click="despesa.isRejecting = true" class="w-8 h-8 flex items-center justify-center text-red-600 bg-red-100 hover:bg-red-200 rounded-full" title="Rejeitar Despesa"><i class="fas fa-times"></i></button>
+                                                                                        </div>
+                                                                                    </template>
+                                                                                    <!-- Estado de Aprovação -->
+                                                                                    <template x-if="despesa.isApproving">
+                                                                                        <div class="w-full">
+                                                                                            <textarea x-model="despesa.approvalComment" rows="2" class="w-full text-xs border-gray-300 rounded-md" placeholder="Observação (opcional)..."></textarea>
+                                                                                            <div class="flex justify-end items-center gap-2 mt-1">
+                                                                                                <button @click="despesa.isApproving = false; despesa.approvalComment = ''" class="text-xs text-gray-500 hover:text-gray-700" title="Cancelar">Cancelar</button>
+                                                                                                <button @click="despesa.status = 'approved'; despesa.isApproving = false;" class="px-2 py-1 text-xs rounded-md bg-green-600 text-white hover:bg-green-700" title="Confirmar Aprovação">Confirmar</button>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </template>
+                                                                                    <!-- Estado de Rejeição -->
+                                                                                    <template x-if="despesa.isRejecting">
+                                                                                        <div class="w-full">
+                                                                                            <textarea x-model="despesa.rejectionReason" rows="2" class="w-full text-xs border-gray-300 rounded-md" placeholder="Motivo da rejeição..."></textarea>
+                                                                                            <div class="flex justify-end items-center gap-2 mt-1">
+                                                                                                <button @click="despesa.isRejecting = false; despesa.rejectionReason = ''" class="text-xs text-gray-500 hover:text-gray-700" title="Cancelar">Cancelar</button>
+                                                                                                <button @click="if(despesa.rejectionReason.trim()) { despesa.status = 'rejected'; despesa.isRejecting = false; }" :disabled="!despesa.rejectionReason.trim()" class="px-2 py-1 text-xs rounded-md bg-red-600 text-white hover:bg-red-700 disabled:bg-red-300" title="Confirmar Rejeição">Confirmar</button>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </template>
+                                                                                    <!-- Estado Final (Aprovado/Rejeitado) -->
+                                                                                    <template x-if="despesa.status === 'approved'">
+                                                                                        <div>
+                                                                                            <div class="flex items-center justify-center gap-1">
+                                                                                                <span class="font-bold text-xs text-green-600">APROVADO</span>
+                                                                                                <button @click="despesa.status = 'pending'; despesa.approvalComment = ''" class="text-blue-600 hover:text-blue-800" title="Reverter decisão">
+                                                                                                    <i class="fas fa-undo text-xs"></i>
+                                                                                                </button>
+                                                                                            </div>
+                                                                                            <p x-show="despesa.approvalComment" class="text-xs text-gray-600 italic" x-text="despesa.approvalComment"></p>
+                                                                                        </div>
+                                                                                    </template>
+                                                                                    <template x-if="despesa.status === 'rejected'">
+                                                                                        <div>
+                                                                                            <div class="flex items-center justify-center gap-1">
+                                                                                                <span class="font-bold text-xs text-red-600">REJEITADO</span>
+                                                                                                <button @click="despesa.status = 'pending'; despesa.rejectionReason = ''" class="text-blue-600 hover:text-blue-800" title="Reverter decisão">
+                                                                                                    <i class="fas fa-undo text-xs"></i>
+                                                                                                </button>
+                                                                                            </div>
+                                                                                            <p class="text-xs text-gray-600 italic" x-text="despesa.rejectionReason"></p>
+                                                                                        </div>
+                                                                                    </template>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </template>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>
+        function pageData() {
+            return {
+                valorAdiantado: 880.50,
+                destinosOriginais: ['MG/Uberlândia', 'SP/São Paulo'],
+                anexosOriginais: [
+                    { name: 'proposta_comercial_cliente_a.pdf', url: '#' },
+                    { name: 'roteiro_preliminar.docx', url: '#' }
+                ],
+                roteiro: [
+                    { 
+                        cliente: 'AgroSoja Comércio Agrícola', location: 'GO/Rio Verde', startDate: '06/10/2025', endDate: '07/10/2025',
+                        atividades: [
+                            { 
+                                data: '06/10/2025', tipo: 'NEGOCIAÇÃO/PROSPECÇÃO', observacao: 'Reunião de alinhamento sobre a colheita de soja e apresentação de novas sementes.', anexos: ['apresentacao_novas_sementes.pdf'],
+                                despesas: [
+                                    { tipo: 'Alimentação', valor: 85.50, anexo: 'nf_almoco_01.pdf', status: 'pending', approvalComment: '', isApproving: false, rejectionReason: '', isRejecting: false },
+                                    { tipo: 'Transporte', valor: 30.00, anexo: 'recibo_uber_01.pdf', status: 'pending', approvalComment: '', isApproving: false, rejectionReason: '', isRejecting: false }
+                                ]
+                            }
+                        ]
+                    },
+                    { 
+                        cliente: 'Cooperativa Agropecuária Vale do Paranaíba', location: 'MG/Capinópolis', startDate: '08/10/2025', endDate: '08/10/2025',
+                        atividades: [
+                            {
+                                data: '08/10/2025', tipo: 'POS VENDA/VISITA TECNICA', observacao: 'Acompanhamento da aplicação de defensivos na lavoura de milho.', anexos: [],
+                                despesas: [
+                                    { tipo: 'Alimentação', valor: 65.00, anexo: 'nf_almoco_02.pdf', status: 'pending', approvalComment: '', isApproving: false, rejectionReason: '', isRejecting: false }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                get totalDespesas() {
+                    return this.roteiro.reduce((total, item) => {
+                        return total + item.atividades.reduce((subtotal, atividade) => {
+                            return subtotal + atividade.despesas.reduce((despesaTotal, despesa) => despesaTotal + despesa.valor, 0);
+                        }, 0);
+                    }, 0);
+                },
+                get saldo() {
+                    return this.totalDespesas - this.valorAdiantado;
+                },
+                formatCurrency(value) {
+                    if (typeof value !== 'number') return 'R$ 0,00';
+                    return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
